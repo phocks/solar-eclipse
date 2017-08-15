@@ -45,9 +45,19 @@ class Australia extends Preact.Component {
       });
     };
 
-    // Load our data as a promise
+    // Load our data using Promises
     const loadAus = promiseLoadJSON("australia.topo.json");
-    // const load2028 = promiseLoadJSON("eclipse.geo.json");
+
+    const load2028 = promiseLoadJSON("2028-eclipse.geo.json");
+    const load2030 = promiseLoadJSON("2030-eclipse.geo.json");
+    const load2037 = promiseLoadJSON("2037-eclipse.geo.json");
+    const load2038 = promiseLoadJSON("2038-eclipse.geo.json");
+    const load2066 = promiseLoadJSON("2066-eclipse.geo.json");
+    const load2068 = promiseLoadJSON("2068-eclipse.geo.json");
+    const load2077 = promiseLoadJSON("2077-eclipse.geo.json");
+    const load2093 = promiseLoadJSON("2093-eclipse.geo.json");
+
+    
 
     // After Australia loaded do this
     loadAus.then(function (australia) {
@@ -65,145 +75,175 @@ class Australia extends Preact.Component {
         .enter().append("path")
         .attr("d", path)
         .attr('fill', australiaColor);
+
+      return Promise.all([
+        load2028,
+        load2030,
+        load2037,
+        load2038,
+        load2066,
+        load2068,
+        load2077,
+        load2093]);
+    }).then(function (values) {
+      values.forEach(function(eclipse) {
+        const path = geo.geoPath()
+          .projection(projection);
+
+        eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates
+          .concat(eclipse.features[2].geometry.coordinates.reverse());
+
+        const widePath = svg
+          .append('path')
+          .attr('d', path(eclipse.features[0].geometry))
+          .attr('stroke-width', width / 1000)
+          .style('fill', 'none')
+          .style("stroke", eclipseColor)
+          .style('stroke-opacity', strokeOpacity)
+          .style('fill', eclipseColor)
+          .style('fill-opacity', fillOpacity);
+      }, this);
+    });
+
       
       // Return a promise and the next then fires
       // Is this the best way to control svg draw order?
-      return promiseLoadJSON("2028-eclipse.geo.json");
-    }).then(function (eclipse) {
-      const path = geo.geoPath()
-        .projection(projection);
+    //   return promiseLoadJSON("2028-eclipse.geo.json");
+    // }).then(function (eclipse) {
+    //   const path = geo.geoPath()
+    //     .projection(projection);
 
-        eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
+    //     eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
         
-        const widePath = svg
-          .append('path')
-          .attr('d', path(eclipse.features[0].geometry))
-          .attr('stroke-width', width / 1000)
-          .style('fill', 'none')
-          .style("stroke", eclipseColor)
-          .style('stroke-opacity', strokeOpacity)
-          .style('fill', eclipseColor)
-          .style('fill-opacity', fillOpacity);
+    //     const widePath = svg
+    //       .append('path')
+    //       .attr('d', path(eclipse.features[0].geometry))
+    //       .attr('stroke-width', width / 1000)
+    //       .style('fill', 'none')
+    //       .style("stroke", eclipseColor)
+    //       .style('stroke-opacity', strokeOpacity)
+    //       .style('fill', eclipseColor)
+    //       .style('fill-opacity', fillOpacity);
 
-      return promiseLoadJSON("2030-eclipse.geo.json");
-    }).then(function (eclipse) {
-      const path = geo.geoPath()
-        .projection(projection);
+    //   return promiseLoadJSON("2030-eclipse.geo.json");
+    // }).then(function (eclipse) {
+    //   const path = geo.geoPath()
+    //     .projection(projection);
 
-        eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
+    //     eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
         
-        const widePath = svg
-          .append('path')
-          .attr('d', path(eclipse.features[0].geometry))
-          .attr('stroke-width', width / 1000)
-          .style('fill', 'none')
-          .style("stroke", eclipseColor)
-          .style('stroke-opacity', strokeOpacity)
-          .style('fill', eclipseColor)
-          .style('fill-opacity', fillOpacity);
+    //     const widePath = svg
+    //       .append('path')
+    //       .attr('d', path(eclipse.features[0].geometry))
+    //       .attr('stroke-width', width / 1000)
+    //       .style('fill', 'none')
+    //       .style("stroke", eclipseColor)
+    //       .style('stroke-opacity', strokeOpacity)
+    //       .style('fill', eclipseColor)
+    //       .style('fill-opacity', fillOpacity);
 
-      return promiseLoadJSON("2037-eclipse.geo.json");
-    }).then(function (eclipse) {
-      const path = geo.geoPath()
-        .projection(projection);
+    //   return promiseLoadJSON("2037-eclipse.geo.json");
+    // }).then(function (eclipse) {
+    //   const path = geo.geoPath()
+    //     .projection(projection);
 
-        eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
+    //     eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
         
-        const widePath = svg
-          .append('path')
-          .attr('d', path(eclipse.features[0].geometry))
-          .attr('stroke-width', width / 1000)
-          .style('fill', 'none')
-          .style("stroke", eclipseColor)
-          .style('stroke-opacity', strokeOpacity)
-          .style('fill', eclipseColor)
-          .style('fill-opacity', fillOpacity);
+    //     const widePath = svg
+    //       .append('path')
+    //       .attr('d', path(eclipse.features[0].geometry))
+    //       .attr('stroke-width', width / 1000)
+    //       .style('fill', 'none')
+    //       .style("stroke", eclipseColor)
+    //       .style('stroke-opacity', strokeOpacity)
+    //       .style('fill', eclipseColor)
+    //       .style('fill-opacity', fillOpacity);
 
-        return promiseLoadJSON("2038-eclipse.geo.json");
-      }).then(function (eclipse) {
-        const path = geo.geoPath()
-          .projection(projection);
+    //     return promiseLoadJSON("2038-eclipse.geo.json");
+    //   }).then(function (eclipse) {
+    //     const path = geo.geoPath()
+    //       .projection(projection);
 
-        eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
+    //     eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
 
-        const widePath = svg
-          .append('path')
-          .attr('d', path(eclipse.features[0].geometry))
-          .attr('stroke-width', width / 1000)
-          .style('fill', 'none')
-          .style("stroke", eclipseColor)
-          .style('stroke-opacity', strokeOpacity)
-          .style('fill', eclipseColor)
-          .style('fill-opacity', fillOpacity);
+    //     const widePath = svg
+    //       .append('path')
+    //       .attr('d', path(eclipse.features[0].geometry))
+    //       .attr('stroke-width', width / 1000)
+    //       .style('fill', 'none')
+    //       .style("stroke", eclipseColor)
+    //       .style('stroke-opacity', strokeOpacity)
+    //       .style('fill', eclipseColor)
+    //       .style('fill-opacity', fillOpacity);
 
-        return promiseLoadJSON("2066-eclipse.geo.json");
-      }).then(function (eclipse) {
-        const path = geo.geoPath()
-          .projection(projection);
+    //     return promiseLoadJSON("2066-eclipse.geo.json");
+    //   }).then(function (eclipse) {
+    //     const path = geo.geoPath()
+    //       .projection(projection);
 
-        eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
+    //     eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
 
-        const widePath = svg
-          .append('path')
-          .attr('d', path(eclipse.features[0].geometry))
-          .attr('stroke-width', width / 1000)
-          .style('fill', 'none')
-          .style("stroke", eclipseColor)
-          .style('stroke-opacity', strokeOpacity)
-          .style('fill', eclipseColor)
-          .style('fill-opacity', fillOpacity);
+    //     const widePath = svg
+    //       .append('path')
+    //       .attr('d', path(eclipse.features[0].geometry))
+    //       .attr('stroke-width', width / 1000)
+    //       .style('fill', 'none')
+    //       .style("stroke", eclipseColor)
+    //       .style('stroke-opacity', strokeOpacity)
+    //       .style('fill', eclipseColor)
+    //       .style('fill-opacity', fillOpacity);
         
-        return promiseLoadJSON("2068-eclipse.geo.json");
-      }).then(function (eclipse) {
-        const path = geo.geoPath()
-          .projection(projection);
+    //     return promiseLoadJSON("2068-eclipse.geo.json");
+    //   }).then(function (eclipse) {
+    //     const path = geo.geoPath()
+    //       .projection(projection);
 
-        eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
+    //     eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
 
-        const widePath = svg
-          .append('path')
-          .attr('d', path(eclipse.features[0].geometry))
-          .attr('stroke-width', width / 1000)
-          .style('fill', 'none')
-          .style("stroke", eclipseColor)
-          .style('stroke-opacity', strokeOpacity)
-          .style('fill', eclipseColor)
-          .style('fill-opacity', fillOpacity);
+    //     const widePath = svg
+    //       .append('path')
+    //       .attr('d', path(eclipse.features[0].geometry))
+    //       .attr('stroke-width', width / 1000)
+    //       .style('fill', 'none')
+    //       .style("stroke", eclipseColor)
+    //       .style('stroke-opacity', strokeOpacity)
+    //       .style('fill', eclipseColor)
+    //       .style('fill-opacity', fillOpacity);
 
-        return promiseLoadJSON("2077-eclipse.geo.json");
-        }).then(function (eclipse) {
-        const path = geo.geoPath()
-          .projection(projection);
+    //     return promiseLoadJSON("2077-eclipse.geo.json");
+    //     }).then(function (eclipse) {
+    //     const path = geo.geoPath()
+    //       .projection(projection);
 
-        eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
+    //     eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
 
-        const widePath = svg
-          .append('path')
-          .attr('d', path(eclipse.features[0].geometry))
-          .attr('stroke-width', width / 1000)
-          .style('fill', 'none')
-          .style("stroke", eclipseColor)
-          .style('stroke-opacity', strokeOpacity)
-          .style('fill', eclipseColor)
-          .style('fill-opacity', fillOpacity);
+    //     const widePath = svg
+    //       .append('path')
+    //       .attr('d', path(eclipse.features[0].geometry))
+    //       .attr('stroke-width', width / 1000)
+    //       .style('fill', 'none')
+    //       .style("stroke", eclipseColor)
+    //       .style('stroke-opacity', strokeOpacity)
+    //       .style('fill', eclipseColor)
+    //       .style('fill-opacity', fillOpacity);
 
-        return promiseLoadJSON("2093-eclipse.geo.json");
-        }).then(function (eclipse) {
-        const path = geo.geoPath()
-          .projection(projection);
+    //     return promiseLoadJSON("2093-eclipse.geo.json");
+    //     }).then(function (eclipse) {
+    //     const path = geo.geoPath()
+    //       .projection(projection);
 
-        eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
+    //     eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates.concat(eclipse.features[2].geometry.coordinates.reverse());
 
-        const widePath = svg
-          .append('path')
-          .attr('d', path(eclipse.features[0].geometry))
-          .attr('stroke-width', width / 1000)
-          .style('fill', 'none')
-          .style("stroke", eclipseColor)
-          .style('stroke-opacity', strokeOpacity)
-          .style('fill', eclipseColor)
-          .style('fill-opacity', fillOpacity);
-    });
+    //     const widePath = svg
+    //       .append('path')
+    //       .attr('d', path(eclipse.features[0].geometry))
+    //       .attr('stroke-width', width / 1000)
+    //       .style('fill', 'none')
+    //       .style("stroke", eclipseColor)
+    //       .style('stroke-opacity', strokeOpacity)
+    //       .style('fill', eclipseColor)
+    //       .style('fill-opacity', fillOpacity);
+    // });
 
     // // After eclipse loaded do this
     // load2028.then(function (eclipse) {
