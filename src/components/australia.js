@@ -4,16 +4,17 @@ const select = require("d3-selection");
 const geo = require('d3-geo');
 const request = require('d3-request');
 const shape = require('d3-shape');
+const scale = require('d3-scale')
 
-const   width = 660,
+const   width = 670,
         height = 600,
         maxWidth = 1000,
         strokeOpacity = 0.0,
         fillOpacity = 0.6,
-        australiaColor = 'darkgrey',
+        australiaColor = '#222',
         eclipseColor = 'CORNFLOWERBLUE',
-        labelColor = "DARKSLATEGRAY",
-        labelFontSize = 10;
+        labelColor = "#aaa",
+        labelFontSize = 12;
 
 // Set up a D3 procection here first to use on both australia and the eclipse path
 const projection = geo.geoConicConformal()
@@ -22,6 +23,11 @@ const projection = geo.geoConicConformal()
   // .scale(600)
   // .translate([300, 0]);
   // .fitSize([width, height], australiaGeoJSON);
+
+// Set up our color scale
+const colorScale = scale.scaleLinear()
+  .domain([2017,2117])
+  .range(['MEDIUMSEAGREEN', 'SLATEBLUE']);
 
 class Australia extends Preact.Component {
   componentWillMount() {
@@ -33,6 +39,12 @@ class Australia extends Preact.Component {
       // .attr("height", height);
       .attr('viewBox', `0, 0, ${+width}, ${+height}`)
       .style('max-width', maxWidth + 'px');
+
+    // Fix for firefox blend mode bug
+    svg.append('rect')
+      .attr('width', width + 1)
+      .attr('height', height + 1)
+      .attr('fill', '#f9f9f9');
 
     // Just testing wrapping D3 request in a promise
     function promiseLoadJSON (url) {
@@ -93,14 +105,13 @@ class Australia extends Preact.Component {
         // Draw each path
         const widePath = svg
           .append('path')
+          .style('mix-blend-mode', 'lighten')
           .attr('d', path(eclipse.features[0].geometry))
           .attr('stroke-width', width / 100)
-          .style('fill', 'none')
           .style("stroke", eclipseColor)
           .style('stroke-opacity', strokeOpacity)
-          .style('fill', eclipseColor)
-          .style('fill-opacity', fillOpacity)
-          .style('mix-blend-mode', 'color');
+          .style('fill', colorScale(eclipse.year))
+          .style('fill-opacity', fillOpacity);
 
         // Draw an invisible mid path
         const midPath = svg
@@ -119,7 +130,7 @@ class Australia extends Preact.Component {
           .attr('startOffset', eclipse.labelOffset + "%")
           .text(eclipse.year)
           .style('fill', labelColor)
-          .style('font-size', labelFontSize)
+          .style('font-size', labelFontSize + "px")
           .style('font-weight', 'bold')
           .style('font-family', 'Helvetica,Arial,sans-serif')
           .append('tspan')
