@@ -1,4 +1,6 @@
 {
+    "year": "2037",
+    "labelOffset": 37,    
     "type": "FeatureCollection",
     "features": [
         {
