@@ -57,8 +57,6 @@ class Australia extends Preact.Component {
     const load2077 = promiseLoadJSON("2077-eclipse.geo.json");
     const load2093 = promiseLoadJSON("2093-eclipse.geo.json");
 
-    
-
     // After Australia loaded do this
     loadAus.then(function (australia) {
       const australiaGeoJSON = topojson.feature(australia, australia.objects.states);
@@ -76,6 +74,7 @@ class Australia extends Preact.Component {
         .attr("d", path)
         .attr('fill', australiaColor);
 
+      // Load all the files
       return Promise.all([
         load2028,
         load2030,
