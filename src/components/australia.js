@@ -6,6 +6,8 @@ const request = require('d3-request');
 const shape = require('d3-shape');
 const scale = require('d3-scale')
 
+const styles = require("./australia.scss");
+
 const   width = 670,
         height = 600,
         maxWidth = 1000,
@@ -34,17 +36,26 @@ class Australia extends Preact.Component {
 
   }
   componentDidMount() {
-    const svg = select.select("#map").append("svg")
+    const svg = select.select("#map")
+      .append("svg")
+      .classed(styles.scalingSvg, true)
       .attr("width", "100%")
-      // .attr("height", height);
+      .attr("height", "100%")
       .attr('viewBox', `0, 0, ${+width}, ${+height}`)
-      .style('max-width', maxWidth + 'px');
+      // .style('min-height', '400px')
+      // .style('width', '100vw')
+      // .style('max-width', maxWidth + 'px');
 
     // Fix for firefox blend mode bug
-    svg.append('rect')
-      .attr('width', width + 1)
-      .attr('height', height + 1)
-      .attr('fill', '#f9f9f9');
+    /*
+     *
+     * USING CLIP-PATH NOW SO NO LONGER NEEDED
+     * 
+     */
+    // svg.append('rect')
+    //   .attr('width', width + 1)
+    //   .attr('height', height + 1)
+    //   .attr('fill', '#f9f9f9');
 
     // Just testing wrapping D3 request in a promise
     function promiseLoadJSON (url) {
@@ -75,6 +86,15 @@ class Australia extends Preact.Component {
       const path = geo.geoPath()
         .projection(projection);
 
+      // Let's create a clipper cutter path
+      svg.append('clipPath')
+        .attr('id', 'aus-clip')
+        .selectAll("path")
+        .data(australiaGeoJSON.features)
+        .enter().append("path")
+        .attr("d", path);
+
+      // Draw Australia
       const group = svg.append("g")
         .classed("states", "true")
         .selectAll("path")
@@ -92,7 +112,8 @@ class Australia extends Preact.Component {
         promiseLoadJSON("2066-eclipse.geo.json"),
         promiseLoadJSON("2068-eclipse.geo.json"),
         promiseLoadJSON("2077-eclipse.geo.json"),
-        promiseLoadJSON("2093-eclipse.geo.json")]);
+        promiseLoadJSON("2093-eclipse.geo.json")
+      ]);
     }).then(function (values) {
       values.forEach(function(eclipse, i) {
         const path = geo.geoPath()
@@ -105,9 +126,10 @@ class Australia extends Preact.Component {
         // Draw each path
         const widePath = svg
           .append('path')
-          .style('mix-blend-mode', 'lighten')
+          .style('mix-blend-mode', 'normal')
           .attr('d', path(eclipse.features[0].geometry))
           .attr('stroke-width', width / 100)
+          .attr('clip-path', 'url(#aus-clip)')
           .style("stroke", eclipseColor)
           .style('stroke-opacity', strokeOpacity)
           .style('fill', colorScale(eclipse.year))
@@ -146,12 +168,13 @@ class Australia extends Preact.Component {
   }
 
   render() {
-    const title = this.props.title;
+    // const title = this.props.title;
 
     return (
-      <div id="australia" class="u-full" style="text-align: center">
-         <h2>{title}</h2> 
-        <div id="map"></div>
+      <div id="australia" className={"u-full " + styles.wrapper}>
+        <div className={styles.responsiveContainer}>
+          <div id="map" className={styles.scalingSvgContainer}></div>
+        </div>
       </div>
     );
   }

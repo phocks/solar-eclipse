@@ -16,7 +16,7 @@ class App extends Preact.Component {
   render() {
     return (
       <div class={styles.wrapper}>
-        <Australia title="Solar eclipses over Australia in the next 100 years" />
+        <Australia />
       </div>
     );
   }
