@@ -31,7 +31,7 @@ class World extends Preact.Component {
       .classed(styles.scalingSvg, true)
       .attr("width", "100%")
       .attr("height", "100%")
-      .attr('viewBox', `0, 0, ${+width}, ${+height}`)
+      .attr('viewBox', `0, 0, ${+width}, ${+height}`);
       // .style('min-height', '400px')
       // .style('width', '100vw')
       // .style('max-width', maxWidth + 'px');
@@ -70,33 +70,20 @@ class World extends Preact.Component {
           neighbors = topojson.neighbors(world.objects.countries.geometries);
 
       projection
-        .fitSize([width, height], neighbors)
-        // .scale(200)
-        // .translate([300, 100]);
+        .fitSize([width, height], topojson.feature(world, world.objects.countries))
         
       const path = geo.geoPath()
         .projection(projection);
 
-      // Let's create a clipper cutter path
-      // svg.append('clipPath')
-      //   .attr('id', 'aus-clip')
-      //   .selectAll("path")
-      //   .data(australiaGeoJSON.features)
-      //   .enter().append("path")
-      //   .attr("d", path);
 
-      // Draw Australia
+      // Draw the World
       const group = svg.append("g")
-        .classed("states", "true")
+        .classed("countries", "true")
         .selectAll("path")
-        .data(neighbors)
+        .data(countries)
         .enter().append("path")
         .attr("d", path)
-        .attr('fill', australiaColor);
-
-
-
-    
+        .attr('fill', worldColor);
 
     });
   }

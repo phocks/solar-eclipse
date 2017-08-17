@@ -16,9 +16,9 @@ if (!window.Promise) {
 class App extends Preact.Component {
   render() {
     return (
-      <div class={styles.wrapper}>
+      <div class={"u-richtext" + styles.wrapper}>
         <Australia />
-        Hello
+        <p>This is some more paragraph text. Blah blah ABC stuff. Hello how are you today?</p>
         <World />
       </div>
     );

@@ -99,7 +99,8 @@ class Australia extends Preact.Component {
         .data(australiaGeoJSON.features)
         .enter().append("path")
         .attr("d", path)
-        .attr('fill', australiaColor);
+        .attr('fill', australiaColor)
+        .attr('stroke', '#444');
 
       // Load ALL the files
       return Promise.all([
