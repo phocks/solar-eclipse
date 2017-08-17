@@ -11,10 +11,9 @@ const styles = require("./australia.scss");
 const   width = 670,
         height = 600,
         maxWidth = 1000,
-        strokeOpacity = 0.0,
-        fillOpacity = 0.6,
-        australiaColor = '#222',
-        eclipseColor = 'CORNFLOWERBLUE',
+        fillOpacity = 0.7,
+        australiaColor = '#444',
+        // eclipseColor = 'CORNFLOWERBLUE',  // Now using color scales instead of this
         labelColor = "#aaa",
         labelFontSize = 12;
 
@@ -36,12 +35,12 @@ class Australia extends Preact.Component {
 
   }
   componentDidMount() {
-    const svg = select.select("#map")
+    const svg = select.select("#australia #map")
       .append("svg")
       .classed(styles.scalingSvg, true)
       .attr("width", "100%")
       .attr("height", "100%")
-      .attr('viewBox', `0, 0, ${+width}, ${+height}`)
+      .attr('viewBox', `0, 0, ${+width}, ${+height}`);
       // .style('min-height', '400px')
       // .style('width', '100vw')
       // .style('max-width', maxWidth + 'px');
@@ -72,7 +71,6 @@ class Australia extends Preact.Component {
 
     // Load our data using Promises
     const loadAus = promiseLoadJSON("australia.topo.json");
-
 
     // After Australia loaded do this
     loadAus.then(function (australia) {
@@ -126,12 +124,9 @@ class Australia extends Preact.Component {
         // Draw each path
         const widePath = svg
           .append('path')
-          .style('mix-blend-mode', 'normal')
           .attr('d', path(eclipse.features[0].geometry))
           .attr('stroke-width', width / 100)
           .attr('clip-path', 'url(#aus-clip)')
-          .style("stroke", eclipseColor)
-          .style('stroke-opacity', strokeOpacity)
           .style('fill', colorScale(eclipse.year))
           .style('fill-opacity', fillOpacity);
 
@@ -158,9 +153,53 @@ class Australia extends Preact.Component {
           .append('tspan')
           .attr('dy', -1)
           .text(' →');
+
         }, this);
 
-        
+        const path = geo.geoPath()
+          .projection(projection);
+
+        const cityList = {
+          "cities": [
+            {
+              "type": "Feature",
+              "properties": {
+                  "name": "Gold Coast",
+                  "cmt": "",
+                  "sym": ""
+              },
+              "geometry": {
+                  "type": "Point",
+                  "coordinates": [
+                    153.400940,
+                    -28.003268
+                ]
+              }
+            }
+          ]
+        };
+
+      
+      const cities = {
+        name: "Gold Coast",
+        coordinates: [153.400940,
+        -28.003268]
+      };
+
+      // console.log(projection(cities.coordinates));
+
+      svg.append('path')
+        .attr('d', path(cityList.cities[0].geometry))
+        .style('fill', 'black')
+        .style('fill-opacity', 1);
+
+      svg.append('circle')
+        .attr('cx', projection(cities.coordinates)[0])
+        .attr('cy', projection(cities.coordinates)[1])
+        .attr('r', 3)
+        .attr('fill', 'white');
+
+
     });
   }
   shouldComponentUpdate() {
@@ -168,7 +207,6 @@ class Australia extends Preact.Component {
   }
 
   render() {
-    // const title = this.props.title;
 
     return (
       <div id="australia" className={"u-full " + styles.wrapper}>
