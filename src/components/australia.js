@@ -4,7 +4,7 @@ const select = require("d3-selection");
 const geo = require('d3-geo');
 const request = require('d3-request');
 const shape = require('d3-shape');
-const scale = require('d3-scale')
+const scale = require('d3-scale');
 
 const styles = require("./australia.scss");
 
@@ -70,7 +70,7 @@ class Australia extends Preact.Component {
     };
 
     // Load our data using Promises
-    const loadAus = promiseLoadJSON("australia.topo.json");
+    const loadAus = promiseLoadJSON("aus-data/australia.topo.json");
 
     // After Australia loaded do this
     loadAus.then(function (australia) {
@@ -104,14 +104,14 @@ class Australia extends Preact.Component {
 
       // Load ALL the files
       return Promise.all([
-        promiseLoadJSON("2028-eclipse.geo.json"),
-        promiseLoadJSON("2030-eclipse.geo.json"),
-        promiseLoadJSON("2037-eclipse.geo.json"),
-        promiseLoadJSON("2038-eclipse.geo.json"),
-        promiseLoadJSON("2066-eclipse.geo.json"),
-        promiseLoadJSON("2068-eclipse.geo.json"),
-        promiseLoadJSON("2077-eclipse.geo.json"),
-        promiseLoadJSON("2093-eclipse.geo.json")
+        promiseLoadJSON("aus-data/2028-eclipse.geo.json"),
+        promiseLoadJSON("aus-data/2030-eclipse.geo.json"),
+        promiseLoadJSON("aus-data/2037-eclipse.geo.json"),
+        promiseLoadJSON("aus-data/2038-eclipse.geo.json"),
+        promiseLoadJSON("aus-data/2066-eclipse.geo.json"),
+        promiseLoadJSON("aus-data/2068-eclipse.geo.json"),
+        promiseLoadJSON("aus-data/2077-eclipse.geo.json"),
+        promiseLoadJSON("aus-data/2093-eclipse.geo.json")
       ]);
     }).then(function (values) {
       values.forEach(function(eclipse, i) {

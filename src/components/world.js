@@ -10,16 +10,21 @@ const geoProj = require('d3-geo-projection');
 const styles = require("./world.scss");
 
 const   width = 670,
-        height = 600,
+        height = 400,
         maxWidth = 1000,
         fillOpacity = 0.7,
         worldColor = '#444';
 
 // Set up a D3 procection here 
-var projection = geoProj.geoKavrayskiy7()
+var projection = geoProj.geoFahey()
   .scale(170)
   .translate([width / 2, height / 2])
   .precision(.1);
+
+// Set up our color scale
+const colorScale = scale.scaleLinear()
+  .domain([2017,2117])
+  .range(['MEDIUMSEAGREEN', 'SLATEBLUE']);
 
 class World extends Preact.Component {
   componentWillMount() {
@@ -61,11 +66,10 @@ class World extends Preact.Component {
     };
 
     // Load our data using Promises
-    const loadWorld = promiseLoadJSON("world.topo.json");
+    const loadWorld = promiseLoadJSON("world-data/world.topo.json");
 
     // After Australia loaded do this
     loadWorld.then(function (world) {
-      console.log(world)
       var countries = topojson.feature(world, world.objects.countries).features,
           neighbors = topojson.neighbors(world.objects.countries.geometries);
 
@@ -85,6 +89,60 @@ class World extends Preact.Component {
         .attr("d", path)
         .attr('fill', worldColor);
 
+        // Load ALL the files
+        return Promise.all([
+          promiseLoadJSON("world-data/2019-eclipse.geo.json"),
+          promiseLoadJSON("world-data/2020-eclipse.geo.json"),
+          promiseLoadJSON("world-data/2021-eclipse.geo.json"),
+          promiseLoadJSON("world-data/2024-eclipse.geo.json"),
+          promiseLoadJSON("world-data/2026-eclipse.geo.json"),
+          promiseLoadJSON("world-data/2027-eclipse.geo.json"),
+          // promiseLoadJSON("2077-eclipse.geo.json"),
+          // promiseLoadJSON("2093-eclipse.geo.json")
+        ]);
+      }).then(function (values) {
+        values.forEach(function(eclipse, i) {
+          const path = geo.geoPath()
+            .projection(projection);
+
+          // Hacky way of joining both outer paths together to make a wide path
+          eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates
+            .concat(eclipse.features[2].geometry.coordinates.reverse());
+
+          // Draw each path
+          const widePath = svg
+            .append('path')
+            .attr('d', path(eclipse.features[0].geometry))
+            .style('fill', "orange")
+            .style('fill-opacity', fillOpacity);
+
+          // Draw a mid path
+          const midPath = svg
+            .append('path')
+            .attr('d', path(eclipse.features[1].geometry))
+            .attr('id', 'path-' + i)
+            .style('fill', 'none')
+            // .style('stroke', 'orange');
+
+            // Labels to put on the mid path
+          // const yearText = svg
+          //   .append('text')
+          //   .attr('dy', labelFontSize * 0.4)
+          //   .attr('alignment-baseline', 'alphabetical')
+          //   .append('textPath')
+          //   .attr('xlink:href', '#path-' + i)
+          //   .attr('startOffset', eclipse.labelOffset + "%")
+          //   .text(eclipse.year)
+          //   .style('fill', labelColor)
+          //   .style('font-size', labelFontSize + "px")
+          //   .style('font-weight', 'bold')
+          //   .style('font-family', 'Helvetica,Arial,sans-serif')
+          //   .append('tspan')
+          //   .attr('dy', -1)
+          //   .text(' →');
+
+          }, this);
+
     });
   }
   shouldComponentUpdate() {
@@ -96,7 +154,8 @@ class World extends Preact.Component {
     return (
       <div id="world" className={"u-full " + styles.wrapper}>
         <div className={styles.responsiveContainer}>
-          <div id="map" className={styles.scalingSvgContainer}></div>
+          <div id="map" className={styles.scalingSvgContainer}
+            style={"padding-bottom: " + height / width * 100 + "%"}></div>
         </div>
       </div>
     );
