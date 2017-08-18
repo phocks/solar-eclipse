@@ -101,7 +101,7 @@ class Australia extends Preact.Component {
 
       // Let's create a clipper cutter path
       svg.append('clipPath')
-        .attr('id', 'aus-clip')
+        .attr('id', 'ausClip')
         .selectAll("path")
         .data(australiaGEO.features)
         .enter().append("path")
@@ -146,8 +146,8 @@ class Australia extends Preact.Component {
 
     const widePathGroup = svg.append('g')
       .classed('eclipses', true)
-      .style('-webkit-clip-path', 'url(#aus-clip)')
-      .style('clip-path', 'url(#aus-clip)')
+      // .style('-webkit-clip-path', 'url(#ausClip)') // this breaks iOS
+      .attr('clip-path', 'url(#ausClip)')
       .selectAll('path')
       .data(eclipses)
       .enter()
@@ -327,6 +327,23 @@ class Australia extends Preact.Component {
 
     return (
       <div id="australia" className={"u-full " + styles.wrapper}>
+        <div className={styles.key}>
+        {/* <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Bubbles_in_the_park%2C_Barcelona_%284983834120%29.jpg/636px-Bubbles_in_the_park%2C_Barcelona_%284983834120%29.jpg" /> */}
+          <div style="margin-right: 20%;">
+            Within the next 50 years
+            <br />
+            <svg width="50" height="10">
+              <rect width="50" height="10" style="fill:rgba(59, 195, 226, 0.5);" />
+            </svg>
+          </div>
+          <div>
+            Within the next 100 years
+            <br />
+            <svg width="50" height="10">
+              <rect width="50" height="10" style="fill:rgba(226, 122, 59, 0.5);" />
+            </svg>
+          </div>
+        </div>
         <div className={styles.responsiveContainer}>
           <div id="map" className={styles.scalingSvgContainer}
             style={"padding-bottom: " + height / width * 100 + "%"}></div>

@@ -39,3 +39,24 @@
     font-size: 20px;
   }
 }
+
+.key {
+  font-family: "ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif;
+  font-weight: bold;
+  fill: #333;
+  margin-bottom: 2rem;
+  font-size: 16px;
+  @media screen and (min-width: 700px) {
+    font-size: 20px;
+  }
+  div {
+    display: inline-block;
+    max-width: 38%;
+  }
+}
+
+// img {
+//   -webkit-clip-path: url(#ausClip);
+//   clip-path: url(#ausClip);
+//   width: 400px;
+// }

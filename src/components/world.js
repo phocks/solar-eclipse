@@ -99,7 +99,7 @@ class World extends Preact.Component {
 
         timer.timer(function() {
           var t = Date.now() - t0;
-          projection.rotate([0.01 * t, 0]);
+          projection.rotate([0.02 * t, 0]);
           feature.attr("d", path);
         });
 
@@ -136,7 +136,7 @@ class World extends Preact.Component {
 
             timer.timer(function() {
               var t = Date.now() - t0;
-              projection.rotate([0.01 * t, 0]);
+              projection.rotate([0.02 * t, 0]);
               widePathGroup.attr("d", path);
             });
 
