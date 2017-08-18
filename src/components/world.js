@@ -10,7 +10,7 @@ const timer = require('d3-timer');
 
 const styles = require("./world.scss");
 
-const   width = 670,
+const   width = 410,
         height = 400,
         maxWidth = 1000,
         fillOpacity = 0.7,

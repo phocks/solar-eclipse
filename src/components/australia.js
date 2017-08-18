@@ -9,11 +9,11 @@ const scale = require('d3-scale');
 
 const styles = require("./australia.scss");
 
-const   width = 670,
-        height = 600,
-        maxWidth = 1000,
-        fillOpacity = 0.7,
-        australiaColor = '#444',
+const   width = 800,
+        height = 550,
+        maxWidth = 600,
+        fillOpacity = 0.5,
+        australiaColor = 'white',
         // eclipseColor = 'CORNFLOWERBLUE',  // Now using color scales instead of this
         labelColor = "#aaa",
         labelFontSize = 12;
@@ -41,7 +41,7 @@ class Australia extends Preact.Component {
       .classed(styles.scalingSvg, true)
       .attr("width", "100%")
       .attr("height", "100%")
-      .attr('viewBox', `0, 0, ${+width}, ${+height}`);
+      .attr('viewBox', `0, 0, ${+width}, ${+height}`)
       // .style('min-height', '400px')
       // .style('width', '100vw')
       // .style('max-width', maxWidth + 'px');
@@ -74,6 +74,7 @@ class Australia extends Preact.Component {
     // const loadAus = promiseLoadJSON("./aus-data/australia.topo.json");
 
     const australia = require('./aus-data/australia-simple.topo.json');
+    const australiaGEO = require('./aus-data/australia.geo.json');
 
     const eclipses = [
         require("./aus-data/2028-eclipse.geo.json"),
@@ -91,9 +92,9 @@ class Australia extends Preact.Component {
       const australiaGeoJSON = topojson.feature(australia, australia.objects.states);
 
       projection
-        .fitSize([width, height], australiaGeoJSON)
+        .fitSize([width, height], australiaGEO)
         // .scale(200)
-        // .translate([300, 100]);
+        .center([0.9, 0]); // Push a bit so not to cut off labels
         
       const path = geo.geoPath()
         .projection(projection);
@@ -102,7 +103,7 @@ class Australia extends Preact.Component {
       svg.append('clipPath')
         .attr('id', 'aus-clip')
         .selectAll("path")
-        .data(australiaGeoJSON.features)
+        .data(australiaGEO.features)
         .enter().append("path")
         .attr("d", path)
         .attr('clipPathUnits', 'objectBoundingBox');
@@ -111,11 +112,11 @@ class Australia extends Preact.Component {
       const group = svg.append("g")
         .classed("states", "true")
         .selectAll("path")
-        .data(australiaGeoJSON.features)
+        .data(australiaGEO.features)
         .enter().append("path")
         .attr("d", path)
         .attr('fill', australiaColor)
-        // .attr('stroke', '#444');
+        .attr('stroke', '#444');
 
 
       // console.log(svg.node().getBoundingClientRect().width)
@@ -145,14 +146,14 @@ class Australia extends Preact.Component {
 
     const widePathGroup = svg.append('g')
       .classed('eclipses', true)
+      .style('-webkit-clip-path', 'url(#aus-clip)')
+      .style('clip-path', 'url(#aus-clip)')
       .selectAll('path')
       .data(eclipses)
       .enter()
       .append('path')
       .attr('d', function (d) { return path(d.features[0].geometry)})
-      .style('clip-path', 'url(#aus-clip)')
-      .style('-webkit-clip-path', 'url(#aus-clip)')
-      .style('fill', function (d) { return colorScale(d.year) })
+      .style('fill', function (d) { return d.color })
       .style('fill-opacity', fillOpacity);
 
 
@@ -165,82 +166,158 @@ class Australia extends Preact.Component {
         //   .style('fill', colorScale(eclipses.year))
         //   .style('fill-opacity', fillOpacity);
 
-        // // Draw an invisible mid path
-        const midPath = svg.append('g')
-          .selectAll('path')
-          .data(eclipses)
-          .enter()
-          .append('path')
-          .attr('d', function (d) { return path(d.features[1].geometry)})
-          .attr('id', function (d, i) {return 'path-' + i})
-          .style('fill', 'none')
+    // Draw an invisible mid path
+    const midPath = svg.append('g')
+      .selectAll('path')
+      .data(eclipses)
+      .enter()
+      .append('path')
+      .attr('d', function (d) { return path(d.features[1].geometry)})
+      .attr('id', function (d, i) {return 'path-' + i})
+      .style('fill', 'none')
 
-        //   // Labels to put on the mid path
-        const yearText = svg.append('g')
-          .selectAll('text')
-          .data(eclipses)
-          .enter()
-          .append('text')
-          .attr('dy', labelFontSize * 0.4)
-          .attr('alignment-baseline', 'alphabetical')
-          .append('textPath')
-          .attr('xlink:href', function (d, i) {return '#path-' + i } )
-          .attr('startOffset', function (d) { return d.labelOffset + "%" } )
-          .text( function (d) { return d.year })
-          .style('fill', labelColor)
-          .style('font-size', labelFontSize + "px")
-          .style('font-weight', 'bold')
-          .style('font-family', 'Helvetica,Arial,sans-serif')
-          .append('tspan')
-          .attr('dy', -1)
-          .text(' →');
+    // Labels to put on the mid path
+    const yearText = svg.append('g')
+      .selectAll('text')
+      .data(eclipses)
+      .enter()
+      .append('text')
+      .classed(styles.yearLabels, true)
+      .attr('dy', labelFontSize * 0.4)
+      .attr('alignment-baseline', 'alphabetical')
+      .append('textPath')
+      .attr('xlink:href', function (d, i) {return '#path-' + i } )
+      .attr('startOffset', function (d) { return d.labelOffset + "%" } )
+      .text( function (d) { return d.label })
+      .style('fill', function (d) { return d.color })
+      // .style('font-size', labelFontSize + "px")
+      .style('font-weight', 'bold')
+      .style('font-family', 'Helvetica,Arial,sans-serif')
+      // .append('tspan')
+      // .attr('dy', -1)
+      // .text(' →');
        
         // }, this);
 
         
 
-        const cityList = {
-          "cities": [
-            {
-              "type": "Feature",
-              "properties": {
-                  "name": "Gold Coast",
-                  "cmt": "",
-                  "sym": ""
-              },
-              "geometry": {
-                  "type": "Point",
-                  "coordinates": [
-                    153.400940,
-                    -28.003268
-                ]
-              }
-            }
-          ]
-        };
+        // const cityList = {
+        //   "cities": [
+        //     {
+        //       "type": "Feature",
+        //       "properties": {
+        //           "name": "Gold Coast",
+        //           "cmt": "",
+        //           "sym": ""
+        //       },
+        //       "geometry": {
+        //           "type": "Point",
+        //           "coordinates": [
+        //             153.400940,
+        //             -28.003268
+        //         ]
+        //       }
+        //     }
+        //   ]
+        // };
 
-      
-      const cities = {
-        name: "Gold Coast",
-        coordinates: [153.400940,
-        -28.003268]
-      };
+
+      // A dataset of cities to map
+      const cities = [
+        {
+          name: "Gold Coast",
+          coordinates: [
+            153.400940,
+            -28.003268
+          ],
+          textAnchor: "end",
+          offset: [
+            -12,
+            0
+          ]
+        },
+        {
+          name: "Sydney",
+          coordinates: [
+            151.209900,
+            -33.865143
+          ],
+          textAnchor: "end",
+          offset: [
+            -12,
+            0
+          ]
+        },
+        {
+          name: "Buckleboo",
+          coordinates: [
+            135.8469561,
+            -32.7706229
+          ],
+          textAnchor: "middle",
+          offset: [
+            0,
+            -16
+          ]
+        },
+        {
+          name: "Alice Springs",
+          coordinates: [
+            133.8806114,
+            -23.7002104
+          ],
+          textAnchor: "middle",
+          offset: [
+            0,
+            -16
+          ]
+        },
+        {
+          name: "Perth",
+          coordinates: [
+            115.6806677,
+            -32.0397544
+          ],
+          textAnchor: "start",
+          offset: [
+            8,
+            0
+          ]
+        }
+    ];
 
       // console.log(projection(cities.coordinates));
 
-      svg.append('path')
-        .attr('d', path(cityList.cities[0].geometry))
-        .style('fill', 'black')
-        .style('fill-opacity', 1);
+      // svg.append('path')
+      //   .attr('d', path(cityList.cities[0].geometry))
+      //   .style('fill', 'black')
+      //   .style('fill-opacity', 1);
+
+    cities.forEach(function(city) {
+      svg.append('circle')
+        .attr('cx', projection(city.coordinates)[0])
+        .attr('cy', projection(city.coordinates)[1])
+        .attr('r', 6)
+        .attr('fill', 'black');
 
       svg.append('circle')
-        .attr('cx', projection(cities.coordinates)[0])
-        .attr('cy', projection(cities.coordinates)[1])
-        .attr('r', 3)
+        .attr('cx', projection(city.coordinates)[0])
+        .attr('cy', projection(city.coordinates)[1])
+        .attr('r', 4)
         .attr('fill', 'white');
 
+      svg.append('text')
+        .classed(styles.placeNames, true)
+        .attr('x', projection(city.coordinates)[0])
+        .attr('y', projection(city.coordinates)[1])
+        .attr('dx', city.offset[0])
+        .attr('dy', city.offset[1])
+        .text(city.name)
+        .attr('text-anchor', city.textAnchor);
+    }, this);
 
-    // });
+
+      
   }
   shouldComponentUpdate() {
     return false;
@@ -251,7 +328,8 @@ class Australia extends Preact.Component {
     return (
       <div id="australia" className={"u-full " + styles.wrapper}>
         <div className={styles.responsiveContainer}>
-          <div id="map" className={styles.scalingSvgContainer}></div>
+          <div id="map" className={styles.scalingSvgContainer}
+            style={"padding-bottom: " + height / width * 100 + "%"}></div>
         </div>
       </div>
     );

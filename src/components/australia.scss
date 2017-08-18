@@ -22,3 +22,20 @@
   left: 0;
   top: 0;
 }
+
+.year-labels {
+  font-size: 30px;
+  @media screen and (min-width: 700px) {
+    font-size: 26px;
+  }
+}
+
+.place-names {
+  font-family: "ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif;
+  font-weight: bold;
+  fill: #333;
+  font-size: 26px;
+  @media screen and (min-width: 700px) {
+    font-size: 20px;
+  }
+}

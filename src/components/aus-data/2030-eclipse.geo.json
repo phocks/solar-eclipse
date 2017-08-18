@@ -1,6 +1,8 @@
 {
     "year": "2030",
-    "labelOffset": 85.5,    
+    "label": "2030 →",
+    "color": "rgba(59, 195, 226, 1)",
+    "labelOffset": 82.7,
     "type": "FeatureCollection",
     "features": [
         {

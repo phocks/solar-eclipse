@@ -1,6 +1,8 @@
 {
     "year": "2077",
-    "labelOffset": 45,
+    "label": "→ 2077",
+    "color": "rgba(226, 122, 59, 1)",
+    "labelOffset": 49,
     "type": "FeatureCollection",
     "features": [
         {
