@@ -1,20 +1,26 @@
 const Preact = require('preact');
 
-const element = document.querySelector('[data-solar-eclipse-root]');
+const elementAustralia = document.querySelector('[data-solar-eclipse-root]');
+const elementWorld = document.querySelector('[name=worldmap]');
 
-let root;
-let render = () => {
+const init = () => {
+    render(elementAustralia, "australia");
+    render(elementWorld, "world");
+}
+
+
+let render = (element, type) => {
     let App = require('./components/app');
-    root = Preact.render(<App />, element, root);
+    Preact.render(<App type={type}/>, element, element.lastChild);
 };
 
 // Do some hot reload magic with errors
 if (process.env.NODE_ENV !== 'production' && module.hot) {
     // Wrap the actual renderer in an error trap
     let renderFunction = render;
-    render = () => {
+    render = (element, type) => {
         try {
-            renderFunction();
+            renderFunction(element, type);
         } catch (e) {
             // Render the error to the screen in place of the actual app
             const ErrorBox = require('./error-box');
@@ -24,16 +30,16 @@ if (process.env.NODE_ENV !== 'production' && module.hot) {
 
     // If a new app build is detected try rendering it
     module.hot.accept('./components/app', () => {
-        setTimeout(render);
+        setTimeout(init);
     });
 }
 
 // Load when Odyssey is ready
 if (window.__ODYSSEY__) {
-    render();
+    init();
 } else {
     window.addEventListener('odyssey:api', () => {
-        render();
+        init();
     });
 }
 

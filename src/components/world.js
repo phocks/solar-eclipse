@@ -37,20 +37,7 @@ class World extends Preact.Component {
       .attr("width", "100%")
       .attr("height", "100%")
       .attr('viewBox', `0, 0, ${+width}, ${+height}`);
-      // .style('min-height', '400px')
-      // .style('width', '100vw')
-      // .style('max-width', maxWidth + 'px');
 
-    // Fix for firefox blend mode bug
-    /*
-     *
-     * USING CLIP-PATH NOW SO NO LONGER NEEDED
-     * 
-     */
-    // svg.append('rect')
-    //   .attr('width', width + 1)
-    //   .attr('height', height + 1)
-    //   .attr('fill', '#f9f9f9');
 
     // Just testing wrapping D3 request in a promise
     function promiseLoadJSON (url) {
@@ -65,11 +52,19 @@ class World extends Preact.Component {
       });
     };
 
-    // Load our data using Promises
-    const loadWorld = promiseLoadJSON("world-data/world.topo.json");
+    // Load our data 
+    const world = require("./world-data/world-simple.topo.json");
+    const eclipses = [
+      require("./world-data/2019-eclipse.geo.json"),
+      require("./world-data/2020-eclipse.geo.json"),
+      // require("world-data/2021-eclipse.geo.json"), // Antarctica not inhabited
+      require("./world-data/2024-eclipse.geo.json"),
+      require("./world-data/2026-eclipse.geo.json"),
+      require("./world-data/2027-eclipse.geo.json"),
+    ]
 
     // After Australia loaded do this
-    loadWorld.then(function (world) {
+    // loadWorld.then(function (world) {
       var countries = topojson.feature(world, world.objects.countries).features,
           neighbors = topojson.neighbors(world.objects.countries.geometries);
 
@@ -90,18 +85,16 @@ class World extends Preact.Component {
         .attr('fill', worldColor);
 
         // Load ALL the files
-        return Promise.all([
-          promiseLoadJSON("world-data/2019-eclipse.geo.json"),
-          promiseLoadJSON("world-data/2020-eclipse.geo.json"),
-          promiseLoadJSON("world-data/2021-eclipse.geo.json"),
-          promiseLoadJSON("world-data/2024-eclipse.geo.json"),
-          promiseLoadJSON("world-data/2026-eclipse.geo.json"),
-          promiseLoadJSON("world-data/2027-eclipse.geo.json"),
-          // promiseLoadJSON("2077-eclipse.geo.json"),
-          // promiseLoadJSON("2093-eclipse.geo.json")
-        ]);
-      }).then(function (values) {
-        values.forEach(function(eclipse, i) {
+        // return Promise.all([
+        //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2019-eclipse.geo.json"),
+        //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2020-eclipse.geo.json"),
+        //   // promiseLoadJSON("world-data/2021-eclipse.geo.json"), // Antarctica not inhabited
+        //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2024-eclipse.geo.json"),
+        //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2026-eclipse.geo.json"),
+        //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2027-eclipse.geo.json"),
+        // ]);
+      // }).then(function (values) {
+        eclipses.forEach(function(eclipse, i) {
           const path = geo.geoPath()
             .projection(projection);
 
@@ -143,7 +136,7 @@ class World extends Preact.Component {
 
           }, this);
 
-    });
+    // });
   }
   shouldComponentUpdate() {
     return false;

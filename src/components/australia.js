@@ -70,10 +70,23 @@ class Australia extends Preact.Component {
     };
 
     // Load our data using Promises
-    const loadAus = promiseLoadJSON("aus-data/australia.topo.json");
+    // const loadAus = promiseLoadJSON("./aus-data/australia.topo.json");
+
+    const australia = require('./aus-data/australia-simple.topo.json');
+
+    const eclipses = [
+        require("./aus-data/2028-eclipse.geo.json"),
+        require("./aus-data/2030-eclipse.geo.json"),
+        require("./aus-data/2037-eclipse.geo.json"),
+        require("./aus-data/2038-eclipse.geo.json"),
+        require("./aus-data/2066-eclipse.geo.json"),
+        require("./aus-data/2068-eclipse.geo.json"),
+        require("./aus-data/2077-eclipse.geo.json"),
+        require("./aus-data/2093-eclipse.geo.json")
+       ];
 
     // After Australia loaded do this
-    loadAus.then(function (australia) {
+    // loadAus.then(function (australia) {
       const australiaGeoJSON = topojson.feature(australia, australia.objects.states);
 
       projection
@@ -90,7 +103,8 @@ class Australia extends Preact.Component {
         .selectAll("path")
         .data(australiaGeoJSON.features)
         .enter().append("path")
-        .attr("d", path);
+        .attr("d", path)
+        .attr('clipPathUnits', 'objectBoundingBox');
 
       // Draw Australia
       const group = svg.append("g")
@@ -100,65 +114,80 @@ class Australia extends Preact.Component {
         .enter().append("path")
         .attr("d", path)
         .attr('fill', australiaColor)
-        .attr('stroke', '#444');
+        // .attr('stroke', '#444');
+
+      // console.log(svg.node().getBoundingClientRect().width)
 
       // Load ALL the files
-      return Promise.all([
-        promiseLoadJSON("aus-data/2028-eclipse.geo.json"),
-        promiseLoadJSON("aus-data/2030-eclipse.geo.json"),
-        promiseLoadJSON("aus-data/2037-eclipse.geo.json"),
-        promiseLoadJSON("aus-data/2038-eclipse.geo.json"),
-        promiseLoadJSON("aus-data/2066-eclipse.geo.json"),
-        promiseLoadJSON("aus-data/2068-eclipse.geo.json"),
-        promiseLoadJSON("aus-data/2077-eclipse.geo.json"),
-        promiseLoadJSON("aus-data/2093-eclipse.geo.json")
-      ]);
-    }).then(function (values) {
-      values.forEach(function(eclipse, i) {
-        const path = geo.geoPath()
-          .projection(projection);
+      // return Promise.all([
+      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2028-eclipse.geo.json"),
+      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2030-eclipse.geo.json"),
+      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2037-eclipse.geo.json"),
+      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2038-eclipse.geo.json"),
+      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2066-eclipse.geo.json"),
+      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2068-eclipse.geo.json"),
+      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2077-eclipse.geo.json"),
+      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2093-eclipse.geo.json")
+      // ]);
+    // }).then(function (values) {
+      // eclipses.forEach(function(eclipse, i) {
 
-        // Hacky way of joining both outer paths together to make a wide path
-        eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates
-          .concat(eclipse.features[2].geometry.coordinates.reverse());
+      // Rearrange data for wide paths
+    for (let i = 0; i < eclipses.length; i++) {
+
+      // Hacky way of joining both outer paths together to make a wide path
+      eclipses[i].features[0].geometry.coordinates = eclipses[i].features[0].geometry.coordinates
+        .concat(eclipses[i].features[2].geometry.coordinates.reverse());
+    }
+
+    const widePathGroup = svg.append('g')
+      .classed('eclipses', true)
+      .selectAll('path')
+      .data(eclipses)
+      .enter().append('path')
+      .attr('d', function (d) { return path(d.features[0].geometry)})
+      .style('clip-path', 'url(#aus-clip)')
+      .style('-webkit-clip-path', 'url(#aus-clip)')
+      .style('fill', colorScale(eclipses.year))
+      .style('fill-opacity', fillOpacity);
+
 
         // Draw each path
-        const widePath = svg
-          .append('path')
-          .attr('d', path(eclipse.features[0].geometry))
-          .attr('stroke-width', width / 100)
-          .attr('clip-path', 'url(#aus-clip)')
-          .style('fill', colorScale(eclipse.year))
-          .style('fill-opacity', fillOpacity);
+        // const widePath = svg
+        //   .append('path')
+        //   .attr('d', path(eclipses[i].features[0].geometry))
+        //   .attr('stroke-width', width / 100)
+        //   .attr('clip-path', 'url(#aus-clip)')
+        //   .style('fill', colorScale(eclipses.year))
+        //   .style('fill-opacity', fillOpacity);
 
-        // Draw an invisible mid path
-        const midPath = svg
-          .append('path')
-          .attr('d', path(eclipse.features[1].geometry))
-          .attr('id', 'path-' + i)
-          .style('fill', 'none')
+        // // Draw an invisible mid path
+        // const midPath = svg
+        //   .append('path')
+        //   .attr('d', path(eclipses[i].features[1].geometry))
+        //   .attr('id', 'path-' + i)
+        //   .style('fill', 'none')
 
-          // Labels to put on the mid path
-        const yearText = svg
-          .append('text')
-          .attr('dy', labelFontSize * 0.4)
-          .attr('alignment-baseline', 'alphabetical')
-          .append('textPath')
-          .attr('xlink:href', '#path-' + i)
-          .attr('startOffset', eclipse.labelOffset + "%")
-          .text(eclipse.year)
-          .style('fill', labelColor)
-          .style('font-size', labelFontSize + "px")
-          .style('font-weight', 'bold')
-          .style('font-family', 'Helvetica,Arial,sans-serif')
-          .append('tspan')
-          .attr('dy', -1)
-          .text(' →');
+        //   // Labels to put on the mid path
+        // const yearText = svg
+        //   .append('text')
+        //   .attr('dy', labelFontSize * 0.4)
+        //   .attr('alignment-baseline', 'alphabetical')
+        //   .append('textPath')
+        //   .attr('xlink:href', '#path-' + i)
+        //   .attr('startOffset', eclipses[i].labelOffset + "%")
+        //   .text(eclipses[i].year)
+        //   .style('fill', labelColor)
+        //   .style('font-size', labelFontSize + "px")
+        //   .style('font-weight', 'bold')
+        //   .style('font-family', 'Helvetica,Arial,sans-serif')
+        //   .append('tspan')
+        //   .attr('dy', -1)
+        //   .text(' →');
+       
+        // }, this);
 
-        }, this);
-
-        const path = geo.geoPath()
-          .projection(projection);
+        
 
         const cityList = {
           "cities": [
@@ -201,7 +230,7 @@ class Australia extends Preact.Component {
         .attr('fill', 'white');
 
 
-    });
+    // });
   }
   shouldComponentUpdate() {
     return false;
