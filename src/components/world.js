@@ -6,6 +6,7 @@ const request = require('d3-request');
 const shape = require('d3-shape');
 const scale = require('d3-scale');
 const geoProj = require('d3-geo-projection');
+const timer = require('d3-timer');
 
 const styles = require("./world.scss");
 
@@ -15,8 +16,11 @@ const   width = 670,
         fillOpacity = 0.7,
         worldColor = '#444';
 
+
+const t0 = Date.now();
+
 // Set up a D3 procection here 
-var projection = geoProj.geoFahey()
+var projection = geo.geoOrthographic()
   .scale(170)
   .translate([width / 2, height / 2])
   .precision(.1);
@@ -76,13 +80,29 @@ class World extends Preact.Component {
 
 
       // Draw the World
-      const group = svg.append("g")
-        .classed("countries", "true")
-        .selectAll("path")
-        .data(countries)
-        .enter().append("path")
-        .attr("d", path)
-        .attr('fill', worldColor);
+      // const group = svg.append("g")
+      //   .classed("countries", "true")
+      //   .selectAll("path")
+      //   .data(countries)
+      //   .enter().append("path")
+      //   .attr("d", path)
+      //   .attr('fill', worldColor);
+
+      var feature = svg.append("path")
+      .datum(topojson.feature(world, world.objects.land))
+      .attr("d", path);
+
+      // Let's rotate all the paths
+        
+
+        // var feature = svg.selectAll("path");
+
+        timer.timer(function() {
+          var t = Date.now() - t0;
+          projection.rotate([0.01 * t, 0]);
+          feature.attr("d", path);
+        });
+
 
         // Load ALL the files
         // return Promise.all([
@@ -94,27 +114,45 @@ class World extends Preact.Component {
         //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2027-eclipse.geo.json"),
         // ]);
       // }).then(function (values) {
-        eclipses.forEach(function(eclipse, i) {
-          const path = geo.geoPath()
-            .projection(projection);
+        // eclipses.forEach(function(eclipse, i) {
+        //   const path = geo.geoPath()
+        //     .projection(projection);
 
-          // Hacky way of joining both outer paths together to make a wide path
-          eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates
-            .concat(eclipse.features[2].geometry.coordinates.reverse());
+        //   // Hacky way of joining both outer paths together to make a wide path
+        //   eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates
+        //     .concat(eclipse.features[2].geometry.coordinates.reverse());
+        //   }, this);
+
+          const widePathGroup = svg.append('g')
+            .classed('eclipses', true)
+            .selectAll('path')
+            .data(eclipses)
+            .enter().append('path')
+            .attr('d', function (d) { return path(d.features[1].geometry)})
+            .style('stroke', 'orange')
+            .style('fill', 'none');
+            // .style('fill-opacity', fillOpacity);
+
+
+            timer.timer(function() {
+              var t = Date.now() - t0;
+              projection.rotate([0.01 * t, 0]);
+              widePathGroup.attr("d", path);
+            });
 
           // Draw each path
-          const widePath = svg
-            .append('path')
-            .attr('d', path(eclipse.features[0].geometry))
-            .style('fill', "orange")
-            .style('fill-opacity', fillOpacity);
+          // const widePath = svg
+          //   .append('path')
+          //   .attr('d', path(eclipse.features[0].geometry))
+          //   .style('fill', "orange")
+          //   .style('fill-opacity', fillOpacity);
 
           // Draw a mid path
-          const midPath = svg
-            .append('path')
-            .attr('d', path(eclipse.features[1].geometry))
-            .attr('id', 'path-' + i)
-            .style('fill', 'none')
+          // const midPath = svg
+            // .append('path')
+            // .attr('d', path(eclipse.features[1].geometry))
+            // .attr('id', 'path-' + i)
+            // .style('fill', 'none')
             // .style('stroke', 'orange');
 
             // Labels to put on the mid path
@@ -134,7 +172,20 @@ class World extends Preact.Component {
           //   .attr('dy', -1)
           //   .text(' →');
 
-          }, this);
+          
+
+        // Let's rotate all the paths
+        // var t0 = Date.now();
+
+        // var feature = svg.selectAll("path");
+
+        // timer.timer(function() {
+        //   var t = Date.now() - t0;
+        //   projection.rotate([0.01 * t, 0]);
+        //   feature.attr("d", path);
+        // });
+
+
 
     // });
   }

@@ -1,5 +1,6 @@
 const Preact = require("preact");
 const topojson = require("topojson");
+// const topoClient = require("topojson-client")
 const select = require("d3-selection");
 const geo = require('d3-geo');
 const request = require('d3-request');
@@ -116,6 +117,7 @@ class Australia extends Preact.Component {
         .attr('fill', australiaColor)
         // .attr('stroke', '#444');
 
+
       // console.log(svg.node().getBoundingClientRect().width)
 
       // Load ALL the files
@@ -136,6 +138,7 @@ class Australia extends Preact.Component {
     for (let i = 0; i < eclipses.length; i++) {
 
       // Hacky way of joining both outer paths together to make a wide path
+      // Maybe use rect or something for this to be better
       eclipses[i].features[0].geometry.coordinates = eclipses[i].features[0].geometry.coordinates
         .concat(eclipses[i].features[2].geometry.coordinates.reverse());
     }
@@ -144,11 +147,12 @@ class Australia extends Preact.Component {
       .classed('eclipses', true)
       .selectAll('path')
       .data(eclipses)
-      .enter().append('path')
+      .enter()
+      .append('path')
       .attr('d', function (d) { return path(d.features[0].geometry)})
       .style('clip-path', 'url(#aus-clip)')
       .style('-webkit-clip-path', 'url(#aus-clip)')
-      .style('fill', colorScale(eclipses.year))
+      .style('fill', function (d) { return colorScale(d.year) })
       .style('fill-opacity', fillOpacity);
 
 
@@ -162,28 +166,34 @@ class Australia extends Preact.Component {
         //   .style('fill-opacity', fillOpacity);
 
         // // Draw an invisible mid path
-        // const midPath = svg
-        //   .append('path')
-        //   .attr('d', path(eclipses[i].features[1].geometry))
-        //   .attr('id', 'path-' + i)
-        //   .style('fill', 'none')
+        const midPath = svg.append('g')
+          .selectAll('path')
+          .data(eclipses)
+          .enter()
+          .append('path')
+          .attr('d', function (d) { return path(d.features[1].geometry)})
+          .attr('id', function (d, i) {return 'path-' + i})
+          .style('fill', 'none')
 
         //   // Labels to put on the mid path
-        // const yearText = svg
-        //   .append('text')
-        //   .attr('dy', labelFontSize * 0.4)
-        //   .attr('alignment-baseline', 'alphabetical')
-        //   .append('textPath')
-        //   .attr('xlink:href', '#path-' + i)
-        //   .attr('startOffset', eclipses[i].labelOffset + "%")
-        //   .text(eclipses[i].year)
-        //   .style('fill', labelColor)
-        //   .style('font-size', labelFontSize + "px")
-        //   .style('font-weight', 'bold')
-        //   .style('font-family', 'Helvetica,Arial,sans-serif')
-        //   .append('tspan')
-        //   .attr('dy', -1)
-        //   .text(' →');
+        const yearText = svg.append('g')
+          .selectAll('text')
+          .data(eclipses)
+          .enter()
+          .append('text')
+          .attr('dy', labelFontSize * 0.4)
+          .attr('alignment-baseline', 'alphabetical')
+          .append('textPath')
+          .attr('xlink:href', function (d, i) {return '#path-' + i } )
+          .attr('startOffset', function (d) { return d.labelOffset + "%" } )
+          .text( function (d) { return d.year })
+          .style('fill', labelColor)
+          .style('font-size', labelFontSize + "px")
+          .style('font-weight', 'bold')
+          .style('font-family', 'Helvetica,Arial,sans-serif')
+          .append('tspan')
+          .attr('dy', -1)
+          .text(' →');
        
         // }, this);
 

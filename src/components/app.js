@@ -20,7 +20,7 @@ class App extends Preact.Component {
       if (type === "australia") {
           return <Australia  />;
       } else {
-          return <World />;
+          // return <World />;
       }
   }
 }
