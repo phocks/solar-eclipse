@@ -23,6 +23,7 @@ const t0 = Date.now();
 var projection = geo.geoOrthographic()
   .scale(170)
   .translate([width / 2, height / 2])
+  // .clipAngle(90)
   .precision(.1);
 
 // Set up our color scale
@@ -43,85 +44,50 @@ class World extends Preact.Component {
       .attr('viewBox', `0, 0, ${+width}, ${+height}`);
 
 
-    // Just testing wrapping D3 request in a promise
-    function promiseLoadJSON (url) {
-      return new Promise(function(resolve, reject) {
-        request.json(url, function(error, result) {
-          if(error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
-        });
-      });
-    };
-
     // Load our data 
     const world = require("./world-data/world-simple.topo.json");
     const eclipses = [
       require("./world-data/2019-eclipse.geo.json"),
       require("./world-data/2020-eclipse.geo.json"),
-      // require("world-data/2021-eclipse.geo.json"), // Antarctica not inhabited
+      // require("./world-data/2021-eclipse.geo.json"), // Antarctica not inhabited
       require("./world-data/2024-eclipse.geo.json"),
       require("./world-data/2026-eclipse.geo.json"),
       require("./world-data/2027-eclipse.geo.json"),
     ]
 
-    // After Australia loaded do this
-    // loadWorld.then(function (world) {
       var countries = topojson.feature(world, world.objects.countries).features,
           neighbors = topojson.neighbors(world.objects.countries.geometries);
 
       projection
         .fitSize([width, height], topojson.feature(world, world.objects.countries))
+        .scale(198); // Stops clipping top and bottom strokes
         
       const path = geo.geoPath()
         .projection(projection);
 
+      // Define an outline for the globe
+      svg.append("defs").append("path")
+          .datum({type: "Sphere"})
+          .attr("id", "sphere")
+          .attr("d", path);
+
+      svg.append("use")
+          .attr("class", styles.stroke)
+          .attr("xlink:href", "#sphere");
+
+      svg.append("use")
+          .attr("class", styles.fill)
+          .attr("xlink:href", "#sphere");
+
 
       // Draw the World
-      // const group = svg.append("g")
-      //   .classed("countries", "true")
-      //   .selectAll("path")
-      //   .data(countries)
-      //   .enter().append("path")
-      //   .attr("d", path)
-      //   .attr('fill', worldColor);
-
-      var feature = svg.append("path")
+      var theWorld = svg.append("path")
       .datum(topojson.feature(world, world.objects.land))
-      .attr("d", path);
+      .attr("d", path)
+      .attr('fill', 'white')
+      .attr('stroke', 'black')
+      .attr('stroke-width', 0.6);
 
-      // Let's rotate all the paths
-        
-
-        // var feature = svg.selectAll("path");
-
-        timer.timer(function() {
-          var t = Date.now() - t0;
-          projection.rotate([0.02 * t, 0]);
-          feature.attr("d", path);
-        });
-
-
-        // Load ALL the files
-        // return Promise.all([
-        //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2019-eclipse.geo.json"),
-        //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2020-eclipse.geo.json"),
-        //   // promiseLoadJSON("world-data/2021-eclipse.geo.json"), // Antarctica not inhabited
-        //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2024-eclipse.geo.json"),
-        //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2026-eclipse.geo.json"),
-        //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/world-data/2027-eclipse.geo.json"),
-        // ]);
-      // }).then(function (values) {
-        // eclipses.forEach(function(eclipse, i) {
-        //   const path = geo.geoPath()
-        //     .projection(projection);
-
-        //   // Hacky way of joining both outer paths together to make a wide path
-        //   eclipse.features[0].geometry.coordinates = eclipse.features[0].geometry.coordinates
-        //     .concat(eclipse.features[2].geometry.coordinates.reverse());
-        //   }, this);
 
           const widePathGroup = svg.append('g')
             .classed('eclipses', true)
@@ -129,65 +95,19 @@ class World extends Preact.Component {
             .data(eclipses)
             .enter().append('path')
             .attr('d', function (d) { return path(d.features[1].geometry)})
-            .style('stroke', 'orange')
+            .style('stroke', 'rgba(226, 122, 59, 0.8)')
+            .style('stroke-width', 4)
+            // .style('stroke-opacity', 0.5)
             .style('fill', 'none');
             // .style('fill-opacity', fillOpacity);
 
-
+            // Put a rotate on the paths
             timer.timer(function() {
               var t = Date.now() - t0;
               projection.rotate([0.02 * t, 0]);
-              widePathGroup.attr("d", path);
+              widePathGroup.attr("d", function (d) { return path(d.features[1].geometry)});
+              theWorld.attr("d", path);
             });
-
-          // Draw each path
-          // const widePath = svg
-          //   .append('path')
-          //   .attr('d', path(eclipse.features[0].geometry))
-          //   .style('fill', "orange")
-          //   .style('fill-opacity', fillOpacity);
-
-          // Draw a mid path
-          // const midPath = svg
-            // .append('path')
-            // .attr('d', path(eclipse.features[1].geometry))
-            // .attr('id', 'path-' + i)
-            // .style('fill', 'none')
-            // .style('stroke', 'orange');
-
-            // Labels to put on the mid path
-          // const yearText = svg
-          //   .append('text')
-          //   .attr('dy', labelFontSize * 0.4)
-          //   .attr('alignment-baseline', 'alphabetical')
-          //   .append('textPath')
-          //   .attr('xlink:href', '#path-' + i)
-          //   .attr('startOffset', eclipse.labelOffset + "%")
-          //   .text(eclipse.year)
-          //   .style('fill', labelColor)
-          //   .style('font-size', labelFontSize + "px")
-          //   .style('font-weight', 'bold')
-          //   .style('font-family', 'Helvetica,Arial,sans-serif')
-          //   .append('tspan')
-          //   .attr('dy', -1)
-          //   .text(' →');
-
-          
-
-        // Let's rotate all the paths
-        // var t0 = Date.now();
-
-        // var feature = svg.selectAll("path");
-
-        // timer.timer(function() {
-        //   var t = Date.now() - t0;
-        //   projection.rotate([0.01 * t, 0]);
-        //   feature.attr("d", path);
-        // });
-
-
-
-    // });
   }
   shouldComponentUpdate() {
     return false;
