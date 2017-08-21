@@ -122,7 +122,7 @@ class World extends Preact.Component {
         .text(function(d) { return d.label })
         .style('font-weight', 'bold')
         .style('font-family', '"ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif')
-        .style('fill', 'rgba(226, 122, 59, 1.0)')
+        .style('fill', '#C44B00')
         .attr('text-anchor', function (d) { return d.textAnchor })
         // .style('stroke', 'white')
         // .style('stroke-width', "0.5px")

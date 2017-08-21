@@ -1,7 +1,7 @@
 {
     "year": "2068",
     "label": "→ 2068",
-    "color": "rgba(59, 195, 226, 1)",
+    "color": "#177D97",
     "labelOffset": 80,
     "type": "FeatureCollection",
     "features": [
