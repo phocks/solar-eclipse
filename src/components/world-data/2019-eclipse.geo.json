@@ -1,4 +1,9 @@
 {
+    "year": "2019",
+    "labelOffset": [
+        2, -7
+    ],
+    "textAnchor": "start",
     "type": "FeatureCollection",
     "features": [
         {

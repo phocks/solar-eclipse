@@ -10,7 +10,7 @@ const timer = require('d3-timer');
 
 const styles = require("./world.scss");
 
-const   width = 410,
+const   width = 430,
         height = 400,
         maxWidth = 1000,
         fillOpacity = 0.7,
@@ -53,61 +53,136 @@ class World extends Preact.Component {
       require("./world-data/2024-eclipse.geo.json"),
       require("./world-data/2026-eclipse.geo.json"),
       require("./world-data/2027-eclipse.geo.json"),
-    ]
+    ];
 
-      var countries = topojson.feature(world, world.objects.countries).features,
-          neighbors = topojson.neighbors(world.objects.countries.geometries);
+    var countries = topojson.feature(world, world.objects.countries).features,
+        neighbors = topojson.neighbors(world.objects.countries.geometries);
 
-      projection
-        .fitSize([width, height], topojson.feature(world, world.objects.countries))
-        .scale(198); // Stops clipping top and bottom strokes
-        
-      const path = geo.geoPath()
-        .projection(projection);
+    projection
+      .fitSize([width, height], topojson.feature(world, world.objects.countries))
+      .scale(198); // Stops clipping top and bottom strokes
+      
+    const path = geo.geoPath()
+      .projection(projection);
 
-      // Define an outline for the globe
-      svg.append("defs").append("path")
-          .datum({type: "Sphere"})
-          .attr("id", "sphere")
-          .attr("d", path);
+    // Define an outline for the globe
+    svg.append("defs").append("path")
+        .datum({type: "Sphere"})
+        .attr("id", "sphere")
+        .attr("d", path);
 
-      svg.append("use")
-          .attr("class", styles.stroke)
-          .attr("xlink:href", "#sphere");
+    svg.append("use")
+        .attr("class", styles.stroke)
+        .attr("xlink:href", "#sphere");
 
-      svg.append("use")
-          .attr("class", styles.fill)
-          .attr("xlink:href", "#sphere");
-
-
-      // Draw the World
-      var theWorld = svg.append("path")
-      .datum(topojson.feature(world, world.objects.land))
-      .attr("d", path)
-      .attr('fill', 'white')
-      .attr('stroke', 'black')
-      .attr('stroke-width', 0.6);
+    svg.append("use")
+        .attr("class", styles.fill)
+        .attr("xlink:href", "#sphere");
 
 
-          const widePathGroup = svg.append('g')
-            .classed('eclipses', true)
-            .selectAll('path')
-            .data(eclipses)
-            .enter().append('path')
-            .attr('d', function (d) { return path(d.features[1].geometry)})
-            .style('stroke', 'rgba(226, 122, 59, 0.8)')
-            .style('stroke-width', 4)
-            // .style('stroke-opacity', 0.5)
-            .style('fill', 'none');
-            // .style('fill-opacity', fillOpacity);
+    // Draw the World
+    var theWorld = svg.append("path")
+    .datum(topojson.feature(world, world.objects.land))
+    .attr("d", path)
+    .attr('fill', 'white')
+    .attr('stroke', '#5C6C70')
+    .attr('stroke-width', 1);
 
-            // Put a rotate on the paths
-            timer.timer(function() {
-              var t = Date.now() - t0;
-              projection.rotate([0.02 * t, 0]);
-              widePathGroup.attr("d", function (d) { return path(d.features[1].geometry)});
-              theWorld.attr("d", path);
-            });
+
+    const widePathGroup = svg.append('g')
+      .classed('eclipses', true)
+      .selectAll('path')
+      .data(eclipses)
+      .enter().append('path')
+      .attr('d', function (d) { return path(d.features[1].geometry)})
+      .style('stroke', 'rgba(226, 122, 59, 0.5)')
+      .style('stroke-width', 4)
+      .attr('id', function (d, i) {return 'world-path-' + i})
+      // .style('stroke-opacity', 0.5)
+      .style('fill', 'none');
+      // .style('fill-opacity', fillOpacity);
+
+      const midPoint = svg.append("g")
+        .attr("class","points")
+        .selectAll("path")
+        .data(eclipses)
+        .enter().append("path")
+        .attr("class", "point")
+        .attr('fill', 'rgba(226, 122, 59, 1)')
+        .attr("d", function (d) { return path(d.features[3].geometry)});
+
+      const labelText = svg.append("g")
+        // .attr("class","labels")
+        .selectAll("text")
+        .data(eclipses)
+        .enter()
+        .append("text")
+        .attr("class", styles.label)
+        .classed('label', true)
+        .text(function(d) { return d.year })
+        .style('font-weight', 'bold')
+        .style('font-family', '"ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif')
+        .style('fill', 'rgba(226, 122, 59, 1.0)')
+        .attr('text-anchor', function (d) { return d.textAnchor });
+        // .style('stroke', 'white');
+
+      position_labels();
+
+      function position_labels() {
+        svg.selectAll('.label')
+          .attr("transform", function(d) { 
+            return "translate(" + projection(d.features[3].geometry.coordinates) + ")"; 
+          })
+          .attr('dx', function(d) { 
+            return d.labelOffset[0]; 
+          })
+          .attr('dy', function(d) { 
+            return d.labelOffset[1]; 
+          })
+          .attr("opacity", function(d) {
+            var geoangle = geo.geoDistance(
+              d.features[3].geometry.coordinates,
+                    [
+                        -projection.rotate()[0],
+                        projection.rotate()[1]
+                    ]);
+            if (geoangle > 1.57079632679490)
+            {
+                return "0";
+            } else {
+                return "1.0";
+            }
+        });
+      }
+
+    // const yearText = svg.append('g')
+    //   .selectAll('text')
+    //   .data(eclipses)
+    //   .enter()
+    //   .append('text')
+    //   .classed(styles.yearLabels, true)
+    //   .attr('dy', 12 * 0.4)
+    //   .attr('alignment-baseline', 'alphabetical')
+    //   .append('textPath')
+    //   .attr('xlink:href', function (d, i) {return '#world-path-' + i } )
+    //   .attr('startOffset', function (d) { return d.labelOffset + "%" } )
+    //   .text( function (d) { return d.year })
+    //   .style('fill', 'orange')
+    //   .style('stroke', 'black')
+    //   .style('stroke-width', '0.5')
+    //   // .style('font-size', labelFontSize + "px") // Moved to CSS
+    //   .style('font-weight', 'bold')
+    //   .style('font-family', '"ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif');
+
+    // Put a rotate on the paths
+    timer.timer(function() {
+      var t = Date.now() - t0;
+      projection.rotate([0.015 * t, 0]);
+      widePathGroup.attr("d", function (d) { return path(d.features[1].geometry)});
+      midPoint.attr("d", function (d) { return path(d.features[3].geometry)});
+      position_labels(); // Hide labels on dark side of Earth
+      theWorld.attr("d", path);
+    });
   }
   shouldComponentUpdate() {
     return false;

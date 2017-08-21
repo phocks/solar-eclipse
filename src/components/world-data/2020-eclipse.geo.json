@@ -1,4 +1,7 @@
 {
+    "year": "2020",
+    "labelOffset": [ 0, 21],
+    "textAnchor": "middle",
     "type": "FeatureCollection",
     "features": [
         {
@@ -1796,3 +1799,5 @@
         }
     ]
 }
+
+

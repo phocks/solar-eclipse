@@ -15,7 +15,7 @@ const   width = 800,
         fillOpacity = 0.5,
         australiaColor = 'white',
         // eclipseColor = 'CORNFLOWERBLUE',  // Now using color scales instead of this
-        labelColor = "#aaa",
+        labelColor = "#2E3638",
         labelFontSize = 12;
 
 // Set up a D3 procection here first to use on both australia and the eclipse path
@@ -116,24 +116,9 @@ class Australia extends Preact.Component {
         .enter().append("path")
         .attr("d", path)
         .attr('fill', australiaColor)
-        .attr('stroke', '#444');
+        .attr('stroke', '#5C6C70')
+        .attr('stroke-width', '2px');
 
-
-      // console.log(svg.node().getBoundingClientRect().width)
-
-      // Load ALL the files
-      // return Promise.all([
-      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2028-eclipse.geo.json"),
-      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2030-eclipse.geo.json"),
-      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2037-eclipse.geo.json"),
-      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2038-eclipse.geo.json"),
-      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2066-eclipse.geo.json"),
-      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2068-eclipse.geo.json"),
-      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2077-eclipse.geo.json"),
-      //   promiseLoadJSON("http://jb-mac.aus.aunty.abc.net.au:8000/aus-data/2093-eclipse.geo.json")
-      // ]);
-    // }).then(function (values) {
-      // eclipses.forEach(function(eclipse, i) {
 
       // Rearrange data for wide paths
     for (let i = 0; i < eclipses.length; i++) {
@@ -155,16 +140,6 @@ class Australia extends Preact.Component {
       .attr('d', function (d) { return path(d.features[0].geometry)})
       .style('fill', function (d) { return d.color })
       .style('fill-opacity', fillOpacity);
-
-
-        // Draw each path
-        // const widePath = svg
-        //   .append('path')
-        //   .attr('d', path(eclipses[i].features[0].geometry))
-        //   .attr('stroke-width', width / 100)
-        //   .attr('clip-path', 'url(#aus-clip)')
-        //   .style('fill', colorScale(eclipses.year))
-        //   .style('fill-opacity', fillOpacity);
 
     // Draw an invisible mid path
     const midPath = svg.append('g')
@@ -190,39 +165,13 @@ class Australia extends Preact.Component {
       .attr('startOffset', function (d) { return d.labelOffset + "%" } )
       .text( function (d) { return d.label })
       .style('fill', function (d) { return d.color })
-      // .style('font-size', labelFontSize + "px")
+      // .style('font-size', labelFontSize + "px") // Moved to CSS
       .style('font-weight', 'bold')
-      .style('font-family', 'Helvetica,Arial,sans-serif')
-      // .append('tspan')
-      // .attr('dy', -1)
-      // .text(' →');
-       
-        // }, this);
-
-        
-
-        // const cityList = {
-        //   "cities": [
-        //     {
-        //       "type": "Feature",
-        //       "properties": {
-        //           "name": "Gold Coast",
-        //           "cmt": "",
-        //           "sym": ""
-        //       },
-        //       "geometry": {
-        //           "type": "Point",
-        //           "coordinates": [
-        //             153.400940,
-        //             -28.003268
-        //         ]
-        //       }
-        //     }
-        //   ]
-        // };
+      .style('font-family', '"ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif');
 
 
-      // A dataset of cities to map
+
+      // A small dataset of cities to map
       const cities = [
         {
           name: "Gold Coast",
@@ -249,10 +198,10 @@ class Australia extends Preact.Component {
           ]
         },
         {
-          name: "Buckleboo",
+          name: "Yardea",
           coordinates: [
-            135.8469561,
-            -32.7706229
+            135.465907,
+            -32.2796585
           ],
           textAnchor: "middle",
           offset: [
@@ -260,6 +209,18 @@ class Australia extends Preact.Component {
             -16
           ]
         },
+        // {
+        //   name: "Buckleboo",
+        //   coordinates: [
+        //     135.8469561,
+        //     -32.7706229
+        //   ],
+        //   textAnchor: "middle",
+        //   offset: [
+        //     0,
+        //     -16
+        //   ]
+        // },
         {
           name: "Alice Springs",
           coordinates: [
@@ -298,7 +259,7 @@ class Australia extends Preact.Component {
         .attr('cx', projection(city.coordinates)[0])
         .attr('cy', projection(city.coordinates)[1])
         .attr('r', 6)
-        .attr('fill', 'black');
+        .attr('fill', '#2E3638');
 
       svg.append('circle')
         .attr('cx', projection(city.coordinates)[0])
@@ -333,14 +294,14 @@ class Australia extends Preact.Component {
             Within the next 50 years
             <br />
             <svg width="50" height="10">
-              <rect width="50" height="10" style="fill:rgba(59, 195, 226, 0.5);" />
+              <rect width="50" height="10" style="fill:rgba(226, 122, 59, 0.5)" />
             </svg>
           </div>
           <div>
             Within the next 100 years
             <br />
             <svg width="50" height="10">
-              <rect width="50" height="10" style="fill:rgba(226, 122, 59, 0.5);" />
+              <rect width="50" height="10" style="fill:rgba(59, 195, 226, 0.5)" />
             </svg>
           </div>
         </div>

@@ -24,11 +24,19 @@
 }
 
 .fill {
-  fill: rgba(59, 195, 226, 1);
+  fill: #E1F5FA;
 }
 
 .stroke {
   // fill: none;
-  stroke: #000;
+  stroke: #5C6C70;
   stroke-width: 0.5px;
+}
+
+.label {
+  font-size: 18px;
+  @media screen and (min-width: 700px) {
+    font-size: 14px;
+  }
+  background-color: white;
 }
