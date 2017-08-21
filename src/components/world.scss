@@ -3,7 +3,7 @@
 }
 
 .responsive-container {
-  max-width: 600px;
+  max-width: 700px;
   margin: auto;
 }
 
@@ -35,8 +35,8 @@
 
 .label {
   font-size: 18px;
+  text-shadow: 1px 1px 0px rgba(255,255,255,0.7), -1px -1px 0px rgba(255,255,255,0.7), -1px 1px 0px rgba(255,255,255,0.7), 1px -1px 0px rgba(255,255,255,0.7);
   @media screen and (min-width: 700px) {
-    font-size: 14px;
+    font-size: 12px;
   }
-  background-color: white;
 }

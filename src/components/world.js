@@ -10,7 +10,7 @@ const timer = require('d3-timer');
 
 const styles = require("./world.scss");
 
-const   width = 430,
+const   width = 500,
         height = 400,
         maxWidth = 1000,
         fillOpacity = 0.7,
@@ -119,15 +119,18 @@ class World extends Preact.Component {
         .append("text")
         .attr("class", styles.label)
         .classed('label', true)
-        .text(function(d) { return d.year })
+        .text(function(d) { return d.label })
         .style('font-weight', 'bold')
         .style('font-family', '"ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif')
         .style('fill', 'rgba(226, 122, 59, 1.0)')
-        .attr('text-anchor', function (d) { return d.textAnchor });
-        // .style('stroke', 'white');
+        .attr('text-anchor', function (d) { return d.textAnchor })
+        // .style('stroke', 'white')
+        // .style('stroke-width', "0.5px")
+        // .style('paint-order', 'stroke');
 
       position_labels();
 
+      // This positions labels and also hides them conditionally
       function position_labels() {
         svg.selectAll('.label')
           .attr("transform", function(d) { 
@@ -155,24 +158,6 @@ class World extends Preact.Component {
         });
       }
 
-    // const yearText = svg.append('g')
-    //   .selectAll('text')
-    //   .data(eclipses)
-    //   .enter()
-    //   .append('text')
-    //   .classed(styles.yearLabels, true)
-    //   .attr('dy', 12 * 0.4)
-    //   .attr('alignment-baseline', 'alphabetical')
-    //   .append('textPath')
-    //   .attr('xlink:href', function (d, i) {return '#world-path-' + i } )
-    //   .attr('startOffset', function (d) { return d.labelOffset + "%" } )
-    //   .text( function (d) { return d.year })
-    //   .style('fill', 'orange')
-    //   .style('stroke', 'black')
-    //   .style('stroke-width', '0.5')
-    //   // .style('font-size', labelFontSize + "px") // Moved to CSS
-    //   .style('font-weight', 'bold')
-    //   .style('font-family', '"ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif');
 
     // Put a rotate on the paths
     timer.timer(function() {
