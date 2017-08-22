@@ -1,7 +1,7 @@
 {
     "name": "solar-eclipse",
-    "version": "1.0.2",
-    "description": "A Preact-enabled ABC News story",
+    "version": "1.0.3",
+    "description": "A look at solar eclipses within the next 100 years in Australia and around the world",
     "license": "MIT",
     "private": true,
     "contributors": [
@@ -33,8 +33,6 @@
         "d3-timer": "^1.0.6",
         "preact": "^8.2.1",
         "preact-compat": "^3.16.0",
-        "promise-polyfill": "6.0.2",
-        "smoothscroll": "^0.3.0",
         "topojson": "^3.0.0"
     }
 }

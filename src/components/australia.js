@@ -246,8 +246,8 @@ class Australia extends Preact.Component {
   render() {
 
     return (
-      <div id="australia" className={"u-full " + styles.wrapper}>
-        <div className={styles.key}>
+      <div id="australia" className={"u-full " + styles.wrapper} aria-label="A map of Australia showing solar eclipses within the next 100 years">
+        <div className={styles.key} aria-label="Legend for the map">
           <div style="margin-right: 20%;">
             Within the next 50 years
             <br />

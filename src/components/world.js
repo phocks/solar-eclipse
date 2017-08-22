@@ -44,12 +44,12 @@ class World extends Preact.Component {
       .attr('viewBox', `0, 0, ${+width}, ${+height}`);
 
 
-    // Load our data 
+    // Load our data
     const world = require("./world-data/world-simple.topo.json");
     const eclipses = [
       require("./world-data/2019-eclipse.geo.json"),
       require("./world-data/2020-eclipse.geo.json"),
-      // require("./world-data/2021-eclipse.geo.json"), // Antarctica not inhabited
+      // require("./world-data/2021-eclipse.geo.json"), // Antarctica not inhabited (mostly)
       require("./world-data/2024-eclipse.geo.json"),
       require("./world-data/2026-eclipse.geo.json"),
       require("./world-data/2027-eclipse.geo.json"),
@@ -101,57 +101,57 @@ class World extends Preact.Component {
       // .style('stroke-opacity', 0.5)
       .style('fill', 'none');
 
-      const midPoint = svg.append("g")
-        .attr("class","points")
-        .selectAll("path")
-        .data(eclipses)
-        .enter().append("path")
-        .attr("class", "point")
-        .attr('fill', 'rgba(226, 122, 59, 1)')
-        .attr("d", function (d) { return path(d.features[3].geometry)});
+    const midPoint = svg.append("g")
+      .attr("class","points")
+      .selectAll("path")
+      .data(eclipses)
+      .enter().append("path")
+      .attr("class", "point")
+      .attr('fill', 'rgba(226, 122, 59, 1)')
+      .attr("d", function (d) { return path(d.features[3].geometry)});
 
-      const labelText = svg.append("g")
-        .selectAll("text")
-        .data(eclipses)
-        .enter()
-        .append("text")
-        .attr("class", styles.label)
-        .classed('label', true)
-        .text(function(d) { return d.label })
-        .style('font-weight', 'bold')
-        .style('font-family', '"ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif')
-        .style('fill', '#C44B00')
-        .attr('text-anchor', function (d) { return d.textAnchor });
+    const labelText = svg.append("g")
+      .selectAll("text")
+      .data(eclipses)
+      .enter()
+      .append("text")
+      .attr("class", styles.label)
+      .classed('label', true)
+      .text(function(d) { return d.label })
+      .style('font-weight', 'bold')
+      .style('font-family', '"ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif')
+      .style('fill', '#C44B00')
+      .attr('text-anchor', function (d) { return d.textAnchor });
 
-      position_labels();
+    position_labels();
 
-      // This positions labels and also hides them conditionally
-      function position_labels() {
-        svg.selectAll('.label')
-          .attr("transform", function(d) { 
-            return "translate(" + projection(d.features[3].geometry.coordinates) + ")"; 
-          })
-          .attr('dx', function(d) { 
-            return d.labelOffset[0]; 
-          })
-          .attr('dy', function(d) { 
-            return d.labelOffset[1]; 
-          })
-          .attr("opacity", function(d) {
-            var geoangle = geo.geoDistance(
-              d.features[3].geometry.coordinates,
-                    [
-                        -projection.rotate()[0],
-                        projection.rotate()[1]
-                    ]);
-            if (geoangle > 1.57079632679490)
-            {
-                return "0";
-            } else {
-                return "1.0";
-            }
-        });
-      }
+    // This positions labels and also hides them conditionally
+    function position_labels() {
+      svg.selectAll('.label')
+        .attr("transform", function(d) { 
+          return "translate(" + projection(d.features[3].geometry.coordinates) + ")"; 
+        })
+        .attr('dx', function(d) { 
+          return d.labelOffset[0]; 
+        })
+        .attr('dy', function(d) { 
+          return d.labelOffset[1]; 
+        })
+        .attr("opacity", function(d) {
+          var geoangle = geo.geoDistance(
+            d.features[3].geometry.coordinates,
+              [
+                -projection.rotate()[0],
+                projection.rotate()[1]
+              ]);
+          if (geoangle > 1.57079632679490)
+          {
+            return "0";
+          } else {
+            return "1.0";
+          }
+      });
+    }
 
 
     // Rotate ALL the paths
@@ -164,14 +164,14 @@ class World extends Preact.Component {
       theWorld.attr("d", path);
     });
   }
+  
   shouldComponentUpdate() {
     return false;
   }
 
   render() {
-
     return (
-      <div id="world" className={"u-full " + styles.wrapper}>
+      <div id="world" className={"u-full " + styles.wrapper} aria-label="Spinning globe of world showing the path of the next 5 total solar eclipses over populated parts of the world">
         <div className={styles.responsiveContainer}>
           <div id="map" className={styles.scalingSvgContainer}
             style={"padding-bottom: " + height / width * 100 + "%"}></div>
