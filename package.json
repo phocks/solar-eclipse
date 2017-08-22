@@ -1,6 +1,6 @@
 {
     "name": "solar-eclipse",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "A Preact-enabled ABC News story",
     "license": "MIT",
     "private": true,
