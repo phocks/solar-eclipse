@@ -1,6 +1,5 @@
 const Preact = require("preact");
 const topojson = require("topojson");
-// const topoClient = require("topojson-client")
 const select = require("d3-selection");
 const geo = require('d3-geo');
 const request = require('d3-request');
@@ -14,7 +13,6 @@ const   width = 800,
         maxWidth = 600,
         fillOpacity = 0.5,
         australiaColor = 'white',
-        // eclipseColor = 'CORNFLOWERBLUE',  // Now using color scales instead of this
         labelColor = "#2E3638",
         labelFontSize = 12;
 
@@ -22,9 +20,7 @@ const   width = 800,
 const projection = geo.geoConicConformal()
   .rotate([-132, 0])
   .parallels([-18, -36]);
-  // .scale(600)
-  // .translate([300, 0]);
-  // .fitSize([width, height], australiaGeoJSON);
+
 
 // Set up our color scale
 const colorScale = scale.scaleLinear()
@@ -41,39 +37,24 @@ class Australia extends Preact.Component {
       .classed(styles.scalingSvg, true)
       .attr("width", "100%")
       .attr("height", "100%")
-      .attr('viewBox', `0, 0, ${+width}, ${+height}`)
-      // .style('min-height', '400px')
-      // .style('width', '100vw')
-      // .style('max-width', maxWidth + 'px');
+      .attr('viewBox', `0, 0, ${+width}, ${+height}`);
 
-    // Fix for firefox blend mode bug
-    /*
-     *
-     * USING CLIP-PATH NOW SO NO LONGER NEEDED
-     * 
-     */
-    // svg.append('rect')
-    //   .attr('width', width + 1)
-    //   .attr('height', height + 1)
-    //   .attr('fill', '#f9f9f9');
 
     // Just testing wrapping D3 request in a promise
-    function promiseLoadJSON (url) {
-      return new Promise(function(resolve, reject) {
-        request.json(url, function(error, result) {
-          if(error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
-        });
-      });
-    };
+    // function promiseLoadJSON (url) {
+    //   return new Promise(function(resolve, reject) {
+    //     request.json(url, function(error, result) {
+    //       if(error) {
+    //         reject(error);
+    //       } else {
+    //         resolve(result);
+    //       }
+    //     });
+    //   });
+    // };
 
-    // Load our data using Promises
-    // const loadAus = promiseLoadJSON("./aus-data/australia.topo.json");
-
-    const australia = require('./aus-data/australia-simple.topo.json');
+    // Load our data
+    // const australia = require('./aus-data/australia-simple.topo.json');
     const australiaGEO = require('./aus-data/australia.geo.json');
 
     const eclipses = [
@@ -87,13 +68,11 @@ class Australia extends Preact.Component {
         require("./aus-data/2093-eclipse.geo.json")
        ];
 
-    // After Australia loaded do this
-    // loadAus.then(function (australia) {
-      const australiaGeoJSON = topojson.feature(australia, australia.objects.states);
+
+      // const australiaGeoJSON = topojson.feature(australia, australia.objects.states);
 
       projection
         .fitSize([width, height], australiaGEO)
-        // .scale(200)
         .center([0.9, 0]); // Push a bit so not to cut off labels
         
       const path = geo.geoPath()
@@ -165,7 +144,6 @@ class Australia extends Preact.Component {
       .attr('startOffset', function (d) { return d.labelOffset + "%" } )
       .text( function (d) { return d.label })
       .style('fill', function (d) { return d.color })
-      // .style('font-size', labelFontSize + "px") // Moved to CSS
       .style('font-weight', 'bold')
       .style('font-family', '"ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif');
 
@@ -209,18 +187,6 @@ class Australia extends Preact.Component {
             -16
           ]
         },
-        // {
-        //   name: "Buckleboo",
-        //   coordinates: [
-        //     135.8469561,
-        //     -32.7706229
-        //   ],
-        //   textAnchor: "middle",
-        //   offset: [
-        //     0,
-        //     -16
-        //   ]
-        // },
         {
           name: "Alice Springs",
           coordinates: [
@@ -247,12 +213,6 @@ class Australia extends Preact.Component {
         }
     ];
 
-      // console.log(projection(cities.coordinates));
-
-      // svg.append('path')
-      //   .attr('d', path(cityList.cities[0].geometry))
-      //   .style('fill', 'black')
-      //   .style('fill-opacity', 1);
 
     cities.forEach(function(city) {
       svg.append('circle')
@@ -278,7 +238,6 @@ class Australia extends Preact.Component {
     }, this);
 
 
-      
   }
   shouldComponentUpdate() {
     return false;
@@ -289,7 +248,6 @@ class Australia extends Preact.Component {
     return (
       <div id="australia" className={"u-full " + styles.wrapper}>
         <div className={styles.key}>
-        {/* <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Bubbles_in_the_park%2C_Barcelona_%284983834120%29.jpg/636px-Bubbles_in_the_park%2C_Barcelona_%284983834120%29.jpg" /> */}
           <div style="margin-right: 20%;">
             Within the next 50 years
             <br />

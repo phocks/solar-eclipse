@@ -100,7 +100,6 @@ class World extends Preact.Component {
       .attr('id', function (d, i) {return 'world-path-' + i})
       // .style('stroke-opacity', 0.5)
       .style('fill', 'none');
-      // .style('fill-opacity', fillOpacity);
 
       const midPoint = svg.append("g")
         .attr("class","points")
@@ -112,7 +111,6 @@ class World extends Preact.Component {
         .attr("d", function (d) { return path(d.features[3].geometry)});
 
       const labelText = svg.append("g")
-        // .attr("class","labels")
         .selectAll("text")
         .data(eclipses)
         .enter()
@@ -123,10 +121,7 @@ class World extends Preact.Component {
         .style('font-weight', 'bold')
         .style('font-family', '"ABCSans","Interval Sans Pro",Arial,Helvetica,sans-serif')
         .style('fill', '#C44B00')
-        .attr('text-anchor', function (d) { return d.textAnchor })
-        // .style('stroke', 'white')
-        // .style('stroke-width', "0.5px")
-        // .style('paint-order', 'stroke');
+        .attr('text-anchor', function (d) { return d.textAnchor });
 
       position_labels();
 
@@ -159,7 +154,7 @@ class World extends Preact.Component {
       }
 
 
-    // Put a rotate on the paths
+    // Rotate ALL the paths
     timer.timer(function() {
       var t = Date.now() - t0;
       projection.rotate([0.015 * t, 0]);

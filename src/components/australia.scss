@@ -47,17 +47,13 @@
   margin-bottom: 2rem;
   font-size: 16px;
   line-height: 1.3em;
+
   @media screen and (min-width: 700px) {
     font-size: 20px;
   }
+
   div {
     display: inline-block;
     max-width: 38%;
   }
 }
-
-// img {
-//   -webkit-clip-path: url(#ausClip);
-//   clip-path: url(#ausClip);
-//   width: 400px;
-// }
