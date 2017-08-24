@@ -1,10 +1,11 @@
 const Preact = require('preact');
 
-const elementAustralia = document.querySelector('[data-solar-eclipse-root]');
+// const elementAustralia = document.querySelector('[data-solar-eclipse-root]');
+const elemNameAustralia = document.querySelector('[name=australiamap]');
 const elementWorld = document.querySelector('[name=worldmap]');
 
 const init = () => {
-    render(elementAustralia, "australia");
+    render(elemNameAustralia, "australia");
     render(elementWorld, "world");
 }
 

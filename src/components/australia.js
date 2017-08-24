@@ -237,10 +237,6 @@ class Australia extends Preact.Component {
         .attr('text-anchor', city.textAnchor);
     }, this);
 
-    // Hack fix for iPad display
-    // select.selectAll('.inline-content.html-fragment')
-    //   .classed('u-full', true);
-
 
   }
   shouldComponentUpdate() {
@@ -250,7 +246,7 @@ class Australia extends Preact.Component {
   render() {
 
     return (
-      <div id="australia" className={styles.wrapper} aria-label="A map of Australia showing solar eclipses within the next 100 years">
+      <div id="australia" className={"u-full " + styles.wrapper} aria-label="A map of Australia showing solar eclipses within the next 100 years">
         <div className={styles.key} aria-label="Legend for the map">
           <div style="margin-right: 20%;">
             Within the next 50 years
