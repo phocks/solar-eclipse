@@ -12,7 +12,7 @@ const styles = require("./world.scss");
 
 const   width = 500,
         height = 400,
-        maxWidth = 1000,
+        // maxWidth = 1000,
         fillOpacity = 0.7,
         worldColor = '#444';
 
