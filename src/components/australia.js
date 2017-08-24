@@ -237,6 +237,10 @@ class Australia extends Preact.Component {
         .attr('text-anchor', city.textAnchor);
     }, this);
 
+    // Hack fix for iPad display
+    select.selectAll('.inline-content.html-fragment')
+      .classed('u-full', true);
+
 
   }
   shouldComponentUpdate() {
