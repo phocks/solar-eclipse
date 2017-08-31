@@ -82,11 +82,11 @@ class World extends Preact.Component {
 
     // Draw the World
     var theWorld = svg.append("path")
-    .datum(topojson.feature(world, world.objects.land))
-    .attr("d", path)
-    .attr('fill', 'white')
-    .attr('stroke', '#5C6C70')
-    .attr('stroke-width', 1);
+      .datum(topojson.feature(world, world.objects.land))
+      .attr("d", path)
+      .attr('fill', 'white')
+      .attr('stroke', '#5C6C70')
+      .attr('stroke-width', 1);
 
 
     const widePathGroup = svg.append('g')
