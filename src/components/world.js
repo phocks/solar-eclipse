@@ -153,16 +153,16 @@ class World extends Preact.Component {
       });
     }
 
-
+    const fps = 25;
     // Rotate ALL the paths
-    timer.timer(function() {
+    timer.interval(function() {
       var t = Date.now() - t0;
       projection.rotate([0.015 * t, 0]);
       widePathGroup.attr("d", function (d) { return path(d.features[1].geometry)});
       midPoint.attr("d", function (d) { return path(d.features[3].geometry)});
       position_labels(); // Hide labels on dark side of Earth
       theWorld.attr("d", path);
-    });
+    }, 1000 / fps);
   }
   
   shouldComponentUpdate() {
